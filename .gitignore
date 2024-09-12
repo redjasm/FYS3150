@@ -1,3 +1,14 @@
 .vscode
 .DS_Store
 *.txt
+
+# LaTeX
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bib
