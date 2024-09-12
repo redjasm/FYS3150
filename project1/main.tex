@@ -1,0 +1,224 @@
+\documentclass[english,notitlepage]{revtex4-1}  % defines the basic parameters of the document
+%For preview: skriv i terminal: latexmk -pdf -pvc filnavn
+
+
+
+% if you want a single-column, remove reprint
+
+% allows special characters (including æøå)
+\usepackage[utf8]{inputenc}
+%\usepackage[english]{babel}
+
+%% note that you may need to download some of these packages manually, it depends on your setup.
+%% I recommend downloading TeXMaker, because it includes a large library of the most common packages.
+
+\usepackage{physics,amssymb}  % mathematical symbols (physics imports amsmath)
+\include{amsmath}
+\usepackage{graphicx}         % include graphics such as plots
+\usepackage{xcolor}           % set colors
+\usepackage{hyperref}         % automagic cross-referencing (this is GODLIKE)
+\usepackage{listings}         % display code
+\usepackage{subfigure}        % imports a lot of cool and useful figure commands
+\usepackage{float}
+%\usepackage[section]{placeins}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{subfigure}
+\usepackage{tikz}
+\usetikzlibrary{quantikz}
+% defines the color of hyperref objects
+% Blending two colors:  blue!80!black  =  80% blue and 20% black
+\hypersetup{ % this is just my personal choice, feel free to change things
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}}
+
+%% Defines the style of the programming listing
+%% This is actually my personal template, go ahead and change stuff if you want
+
+
+
+%% USEFUL LINKS:
+%%
+%%   UiO LaTeX guides:        https://www.mn.uio.no/ifi/tjenester/it/hjelp/latex/
+%%   mathematics:             https://en.wikibooks.org/wiki/LaTeX/Mathematics
+
+%%   PHYSICS !                https://mirror.hmc.edu/ctan/macros/latex/contrib/physics/physics.pdf
+
+%%   the basics of Tikz:       https://en.wikibooks.org/wiki/LaTeX/PGF/Tikz
+%%   all the colors!:          https://en.wikibooks.org/wiki/LaTeX/Colors
+%%   how to draw tables:       https://en.wikibooks.org/wiki/LaTeX/Tables
+%%   code listing styles:      https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
+%%   \includegraphics          https://en.wikibooks.org/wiki/LaTeX/Importing_Graphics
+%%   learn more about figures  https://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions
+%%   automagic bibliography:   https://en.wikibooks.org/wiki/LaTeX/Bibliography_Management  (this one is kinda difficult the first time)
+%%   REVTeX Guide:             http://www.physics.csbsju.edu/370/papers/Journal_Style_Manuals/auguide4-1.pdf
+%%
+%%   (this document is of class "revtex4-1", the REVTeX Guide explains how the class works)
+
+
+%% CREATING THE .pdf FILE USING LINUX IN THE TERMINAL
+%%
+%% [terminal]$ pdflatex template.tex
+%%
+%% Run the command twice, always.
+%% If you want to use \footnote, you need to run these commands (IN THIS SPECIFIC ORDER)
+%%
+%% [terminal]$ pdflatex template.tex
+%% [terminal]$ bibtex template
+%% [terminal]$ pdflatex template.tex
+%% [terminal]$ pdflatex template.tex
+%%
+%% Don't ask me why, I don't know.
+
+\begin{document}
+
+\title{Project 1 - FYS3150}               % self-explanatory
+\author{Josef Ayman M.}                      % self-explanatory
+\date{\today}                             % self-explanatory
+\noaffiliation                            % ignore this, but keep it.
+
+
+\maketitle 
+    
+\textit{List a link to your github repository here!}
+    
+\section*{Problem 1}
+We check that $u(x) = 1 - (1 - e^{-10}) x - e^{-10 x}$ is an exact solution to our Poisson equation.
+
+We simplify it:
+
+\[
+u(x) = 1-x+e^{-10}x-e^{-10x}
+\]
+
+Then we try to find the second derivative:
+
+\[
+u'(x)=-1+e^{-10}+10e^{-10x} \\
+u''(x) =-100e^{-10x}
+\]
+
+
+Which when fits the source term $-(-100e^{-10x}) = f(x) = 100e^{-10x}$
+
+And the boundary conditions:
+
+\[
+u(0)=1-0+0-1=0 \\
+u(1)=1-1+e^{-10}-e^{-10}=0
+\]
+
+\section*{Problem 2}
+In problem 2 we will write a program that:
+
+\begin{itemize}
+    \item Defines a vector of $x$ values.
+    \item Evaluates the exact solution at each point.
+    \item Writes the results to a file.
+    \item It's recommended to use the \textit{\href{https://arma.sourceforge.net/}{armadillo}} library.
+\end{itemize}
+
+We can include figures using the \texttt{figure} environment. Whenever we include a figure or table, we \textit{must} make sure to actually refer to it in the main text, e.g.\ something like this: ``In figure \ref{fig:rel_err} we show \ldots''. 
+\begin{figure}%[h!]
+    \centering %Centers the figure
+    \includegraphics[scale=0.75]{problem2/poisson_solution_plot.pdf} %Imports the figure.
+    \caption{Write a descriptive caption here that explains the content of the figure. Note the font size for the axis labels and ticks --- the size should approximately match the document font size.}
+    \label{fig:rel_err}
+\end{figure}
+
+\section*{Problem 3}
+\textbf{Discretization of the Domain}
+
+\begin{itemize}
+    \item The domain $x$ ranges from 0 to 1.
+    \item We divide the domain into $N$ equally spaced intervals, where $h$ is the spacing between grid points, $h = \frac{1}{N}$.
+    \item Define grid points $x_i$ as:
+    $$ x_i = i h \quad \text{for} \; i = 0, 1, 2, \ldots, N $$
+\end{itemize}
+
+Let $v_i$ be the approximation to $u(x_i)$.
+
+To approximate the second derivative $\frac{d^2 u}{dx^2}$ at a point $x_i$, we use the \textbf{finite difference method}. The central difference approximation for the second derivative is:
+
+$$
+\frac{d^2 u}{dx^2} \approx \frac{u(x_{i+1}) - 2 u(x_i) + u(x_{i-1})}{h^2}
+$$
+
+\textbf{Substitute into the Poisson Equation}
+
+$$
+-\frac{u(x_{i+1}) - 2 u(x_i) + u(x_{i-1})}{h^2} = f(x_i)
+$$
+
+\textbf{Simplify}
+
+Rearrange the equation to solve for the discrete approximation:
+
+$$
+v_{i+1} - 2 v_i + v_{i-1} = -h^2 f_i
+$$
+
+or
+
+\begin{equation}{}
+    -\frac{v_{i+1} - 2 v_i + v_{i-1}}{h^2} = f_i
+\end{equation}
+
+\textbf{Boundary Conditions}
+
+In the problem, the boundary conditions are $u(0) = 0$ and $u(1) = 0$. Therefore:
+
+$$
+v_0 = 0 \\v_N = 0
+$$
+
+Putting it all together, the discretized version of the Poisson equation is:
+
+$$
+v_{i+1} - 2 v_i + v_{i-1} = -h^2 \cdot 100 e^{-10 x_i}
+$$
+
+for $i = 1, 2, \ldots, N-1$, with boundary conditions:
+
+$$
+v_0 = 0 \quad \text{and} \quad v_N = 0
+$$
+
+\section*{Problem 4}
+To rewrite the discretized Poisson equation as a matrix equation, we start from the discretized second derivative:
+
+$$
+-\frac{u_{i+1} - 2u_i + u_{i-1}}{h^2} = f_i
+$$
+
+This can be written in matrix form as $\mathbf{A} \vec{v} = \vec{g}$, where  $\mathbf{A}$ looks like:
+
+$$
+\mathbf{A} = \begin{bmatrix}
+2 & -1 & 0 & 0 \\
+-1 & 2 & -1 & 0 \\
+0 & -1 & 2 & -1 \\
+0 & 0 & -1 & 2
+\end{bmatrix}
+$$
+
+$g_i$ is our right hand of the equation.
+
+$$
+  \begin{bmatrix}        2 & -1 & 0 & 0 \\        -1 & 2 & -1 & 0 \\        0 & -1 & 2 & -1 \\        0 & 0 & -1 & 2    \end{bmatrix} \begin{bmatrix}        v_1\\        v_2\\        v_3\\        v_4    \end{bmatrix} = \begin{bmatrix}        g_1\\        g_2\\        g_3\\        g_4    \end{bmatrix}
+$$
+
+$$
+   \begin{bmatrix}        2v_1 & -v_2 & 0 & 0 \\        -v_1 & 2v_2 & -v_3 & 0 \\        0 & -v_2 & 2v_3 & -v_4 \\        0 & 0 & -v_3 & 2v_4    \end{bmatrix} = \begin{bmatrix}
+g_1 \\
+g_2 \\
+g_3 \\
+g_4
+\end{bmatrix}
+$$
+
+We now showed that we can rewrite the equation in the matrix form $\mathbf{A} \vec{v} = \vec{g}$
+
+\end{document}
