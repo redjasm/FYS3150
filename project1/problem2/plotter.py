@@ -23,7 +23,7 @@ plt.grid(True)
 plt.legend()
 
 # Save the plot to a file
-plt.savefig("poisson_solution_plot.png")
+plt.savefig("poisson_solution_plot.pdf")
 
 # Show the plot
 plt.show()
