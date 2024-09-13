@@ -317,18 +317,17 @@ We count the number of operations in each phase.
 
 \begin{itemize}
     \item \textbf{Forward substitution:} For each \( i \) from 2 to \( n \), we have 3 FLOPs (2 divisions and 1 subtraction). This gives a total of \( 3(n-1) \) FLOPs.
-    \subitem 1 division for \( c_i \)
-    \subitem 1 division for  \(g_i\)
-    \subitem 1 subtraction for \(b_i\)
+          \subitem 1 division for \( c_i \)
+          \subitem 1 division for  \(g_i\)
+          \subitem 1 subtraction for \(b_i\)
     \item \textbf{Backward substitution:} For each \( i \) from \( n-1 \) to 1, we have 2 FLOPs (1 multiplication and 1 subtraction). This gives a total of \( 2(n-1) \) FLOPs.
-    \subitem 1 multiplication for \(c_i v_{i+1}\)
-    \subitem 1 subtraction for \(g_i - c_i v_{i+1}\)
+          \subitem 1 multiplication for \(c_i v_{i+1}\)
+          \subitem 1 subtraction for \(g_i - c_i v_{i+1}\)
     \item \textbf{Total:} The total number of FLOPs is \( 3(n-1) + 2(n-1) = 5(n-1) \) = \( 5n - 5 \).
 \end{itemize}
 
 \section*{Problem 7}
-Here we will write an implementation of the Thomas algorithm we disscussed in 
-% write the word Problem 6 that refers to the section where the algorithm is described
+Here we will write an implementation of the Thomas algorithm we disscussed in
 \textbf{Problem 6}.
 
 \begin{figure}%[h!]
@@ -348,8 +347,27 @@ Here we will write an implementation of the Thomas algorithm we disscussed in
 As we can see in \figurename{ \ref{fig:general_algorithm}} and \figurename{ \ref{fig:general_algorithm_zoomed}}, the general algorithm is a good approximation to the exact solution.
 
 \section*{Problem 8}
+\subsection*{Problem a - Plotting the Absolute Error}
+\figurename{ \ref{fig:absolute_error}} shows the absolute error of the general algorithm compared to the exact solution.
 
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[scale=0.70]{problem8/absolute_error_plot.pdf} %Imports the figure.
+    \caption{Plot of the absolute error of the general algorithm compared to the exact solution.} %Short caption for the figure.
+    \label{fig:absolute_error} %Label for referencing in the text.
+\end{figure}
 
+\subsection*{Problem b - Plotting the Rrelative Error}
+\figurename{ \ref{fig:relative_error}} shows the relative error of the general algorithm compared to the exact solution.
+
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[scale=0.70]{problem8/relative_error_plot.pdf} %Imports the figure.
+    \caption{Plot of the relative error of the general algorithm compared to the exact solution.} %Short caption for the figure.
+    \label{fig:relative_error} %Label for referencing in the text.
+\end{figure}
+
+\subsection*{Problem c - Table of Maximum Relative Error}
 
 
 \end{document}
