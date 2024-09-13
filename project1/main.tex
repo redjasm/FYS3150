@@ -80,24 +80,24 @@
 \noaffiliation                            % ignore this, but keep it.
 
 
-\maketitle 
-    
+\maketitle
+
 \textit{List a link to your github repository here!}
-    
+
 \section*{Problem 1}
 We check that $u(x) = 1 - (1 - e^{-10}) x - e^{-10 x}$ is an exact solution to our Poisson equation.
 
 We simplify it:
 
 \[
-u(x) = 1-x+e^{-10}x-e^{-10x}
+    u(x) = 1-x+e^{-10}x-e^{-10x}
 \]
 
 Then we try to find the second derivative:
 
 \[
-u'(x)=-1+e^{-10}+10e^{-10x} \\
-u''(x) =-100e^{-10x}
+    u'(x)=-1+e^{-10}+10e^{-10x} \\
+    u''(x) =-100e^{-10x}
 \]
 
 
@@ -106,8 +106,8 @@ Which when fits the source term $-(-100e^{-10x}) = f(x) = 100e^{-10x}$
 And the boundary conditions:
 
 \[
-u(0)=1-0+0-1=0 \\
-u(1)=1-1+e^{-10}-e^{-10}=0
+    u(0)=1-0+0-1=0 \\
+    u(1)=1-1+e^{-10}-e^{-10}=0
 \]
 
 \section*{Problem 2}
@@ -120,7 +120,7 @@ In problem 2 we will write a program that:
     \item It's recommended to use the \textit{\href{https://arma.sourceforge.net/}{armadillo}} library.
 \end{itemize}
 
-We can include figures using the \texttt{figure} environment. Whenever we include a figure or table, we \textit{must} make sure to actually refer to it in the main text, e.g.\ something like this: ``In figure \ref{fig:rel_err} we show \ldots''. 
+We can include figures using the \texttt{figure} environment. Whenever we include a figure or table, we \textit{must} make sure to actually refer to it in the main text, e.g.\ something like this: ``In figure \ref{fig:rel_err} we show \ldots''.
 \begin{figure}%[h!]
     \centering %Centers the figure
     \includegraphics[scale=0.75]{problem2/poisson_solution_plot.pdf} %Imports the figure.
@@ -135,7 +135,7 @@ We can include figures using the \texttt{figure} environment. Whenever we includ
     \item The domain $x$ ranges from 0 to 1.
     \item We divide the domain into $N$ equally spaced intervals, where $h$ is the spacing between grid points, $h = \frac{1}{N}$.
     \item Define grid points $x_i$ as:
-    $$ x_i = i h \quad \text{for} \; i = 0, 1, 2, \ldots, N $$
+          $$ x_i = i h \quad \text{for} \; i = 0, 1, 2, \ldots, N $$
 \end{itemize}
 
 Let $v_i$ be the approximation to $u(x_i)$.
@@ -143,13 +143,13 @@ Let $v_i$ be the approximation to $u(x_i)$.
 To approximate the second derivative $\frac{d^2 u}{dx^2}$ at a point $x_i$, we use the \textbf{finite difference method}. The central difference approximation for the second derivative is:
 
 $$
-\frac{d^2 u}{dx^2} \approx \frac{u(x_{i+1}) - 2 u(x_i) + u(x_{i-1})}{h^2}
+    \frac{d^2 u}{dx^2} \approx \frac{u(x_{i+1}) - 2 u(x_i) + u(x_{i-1})}{h^2}
 $$
 
 \textbf{Substitute into the Poisson Equation}
 
 $$
--\frac{u(x_{i+1}) - 2 u(x_i) + u(x_{i-1})}{h^2} = f(x_i)
+    -\frac{u(x_{i+1}) - 2 u(x_i) + u(x_{i-1})}{h^2} = f(x_i)
 $$
 
 \textbf{Simplify}
@@ -157,12 +157,12 @@ $$
 Rearrange the equation to solve for the discrete approximation:
 
 $$
-v_{i+1} - 2 v_i + v_{i-1} = -h^2 f_i
+    v_{i+1} - 2 v_i + v_{i-1} = -h^2 f_i
 $$
 
 or
 
-\begin{equation}{}
+\begin{equation}{\label{eq:discrete_poisson}}
     -\frac{v_{i+1} - 2 v_i + v_{i-1}}{h^2} = f_i
 \end{equation}
 
@@ -171,54 +171,160 @@ or
 In the problem, the boundary conditions are $u(0) = 0$ and $u(1) = 0$. Therefore:
 
 $$
-v_0 = 0 \\v_N = 0
+    v_0 = 0 \\v_N = 0
 $$
 
 Putting it all together, the discretized version of the Poisson equation is:
 
 $$
-v_{i+1} - 2 v_i + v_{i-1} = -h^2 \cdot 100 e^{-10 x_i}
+    v_{i+1} - 2 v_i + v_{i-1} = -h^2 \cdot 100 e^{-10 x_i}
 $$
 
-for $i = 1, 2, \ldots, N-1$, with boundary conditions:
+for $i = 1, 2, \ldots, N-1$, with boundary conditions:
 
 $$
-v_0 = 0 \quad \text{and} \quad v_N = 0
+    v_0 = 0 \quad \text{and} \quad v_N = 0
 $$
 
 \section*{Problem 4}
-To rewrite the discretized Poisson equation as a matrix equation, we start from the discretized second derivative:
-
-$$
--\frac{u_{i+1} - 2u_i + u_{i-1}}{h^2} = f_i
-$$
+To rewrite the discretized Poisson equation as a matrix equation,
+we start from the discretized second derivative equation \ref{eq:discrete_poisson}:
 
 This can be written in matrix form as $\mathbf{A} \vec{v} = \vec{g}$, where  $\mathbf{A}$ looks like:
 
 $$
-\mathbf{A} = \begin{bmatrix}
-2 & -1 & 0 & 0 \\
--1 & 2 & -1 & 0 \\
-0 & -1 & 2 & -1 \\
-0 & 0 & -1 & 2
-\end{bmatrix}
+    \mathbf{A} = \begin{bmatrix}
+        2  & -1 & 0  & 0  \\
+        -1 & 2  & -1 & 0  \\
+        0  & -1 & 2  & -1 \\
+        0  & 0  & -1 & 2
+    \end{bmatrix}
 $$
 
 $g_i$ is our right hand of the equation.
 
 $$
-  \begin{bmatrix}        2 & -1 & 0 & 0 \\        -1 & 2 & -1 & 0 \\        0 & -1 & 2 & -1 \\        0 & 0 & -1 & 2    \end{bmatrix} \begin{bmatrix}        v_1\\        v_2\\        v_3\\        v_4    \end{bmatrix} = \begin{bmatrix}        g_1\\        g_2\\        g_3\\        g_4    \end{bmatrix}
+    \begin{bmatrix}
+        2  & -1 & 0  & 0  \\
+        -1 & 2  & -1 & 0  \\
+        0  & -1 & 2  & -1 \\
+        0  & 0  & -1 & 2
+    \end{bmatrix}
+    \begin{bmatrix}
+        v_1 \\
+        v_2 \\
+        v_3 \\
+        v_4
+    \end{bmatrix} = \begin{bmatrix}
+        g_1 \\
+        g_2 \\
+        g_3 \\
+        g_4
+    \end{bmatrix}
 $$
 
 $$
-   \begin{bmatrix}        2v_1 & -v_2 & 0 & 0 \\        -v_1 & 2v_2 & -v_3 & 0 \\        0 & -v_2 & 2v_3 & -v_4 \\        0 & 0 & -v_3 & 2v_4    \end{bmatrix} = \begin{bmatrix}
-g_1 \\
-g_2 \\
-g_3 \\
-g_4
-\end{bmatrix}
+    \begin{bmatrix}
+        2v_1 & -v_2 & 0    & 0    \\
+        -v_1 & 2v_2 & -v_3 & 0    \\
+        0    & -v_2 & 2v_3 & -v_4 \\
+        0    & 0    & -v_3 & 2v_4
+    \end{bmatrix} = \begin{bmatrix}
+        g_1 \\
+        g_2 \\
+        g_3 \\
+        g_4
+    \end{bmatrix}
 $$
 
 We now showed that we can rewrite the equation in the matrix form $\mathbf{A} \vec{v} = \vec{g}$
+
+\section*{Problem 5}
+\subsection*{Problem a}
+The matrix equation for the internal points can be written as:
+
+$$
+    \mathbf{A} \vec{v} = \vec{g}
+$$
+
+$$
+    \mathbf{A} = \begin{bmatrix}
+        2      & -1     & 0      & \cdots & 0      \\
+        -1     & 2      & -1     & \cdots & 0      \\
+        \vdots & \ddots & \ddots & \ddots & \vdots \\
+        0      & \cdots & -1     & 2      & -1     \\
+        0      & \cdots & 0      & -1     & 2
+    \end{bmatrix}, \quad \vec{v} = \begin{bmatrix}
+        v_1    \\
+        v_2    \\
+        \vdots \\
+        v_n
+    \end{bmatrix}, \quad \vec{g} = \begin{bmatrix}
+        g_1    \\
+        g_2    \\
+        \vdots \\
+        g_n
+    \end{bmatrix}
+$$
+
+Writing out the first and last rows, we see that:
+
+$$
+    2 v_1 - v_2 = g_1, \quad -v_{n-1} + 2 v_n = g_n
+$$
+
+These correspond to the internal points of $\vec{v}^*$, excluding the boundary values. Since  $v_1$ corresponds to the second element of $\vec{v}^*$and  $v_n$ corresponds to the second-to-last element, we conclude that $m = n + 2$, accounting for the two boundary conditions $v^*_1 = 0$ *and $v^*_m = 0$*.
+
+\subsection*{Problem b}
+The vector $\vec{v}$, which we solve for in $\mathbf{A} \vec{v} = \vec{g}$, represents the internal points of \( \vec{v}^* \). The boundary points $v^*_1 = 0$ and $ v^m = 0 $ are known and are excluded from the matrix equation. Additionally, $g_i$ corresponds to $f(x{i+1})$, where $x_{i+1}$ is the corresponding discretized point.
+
+\section*{Problem 6}
+
+\subsection*{Problem a - Algorithm for Solving the System}{\label{sec:algorithm}}
+
+To solve the system \( \mathbf{A} \vec{v} = \vec{g} \) where \( \mathbf{A} \) is a general tridiagonal matrix,
+we can use a method called \textit{\href{https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm}{Thomas Algorithm}}
+(a specialized form of Gaussian elimination for tridiagonal matrices).
+
+
+Here's the algorithm broken down step by step:
+
+\begin{algorithm}[H]
+    \caption{Thomas Algorithm for Tridiagonal Matrices}
+    \begin{algorithmic}[1]
+        \State \( c_1 \gets \frac{c_1}{b_1} \)
+        \State \( g_1 \gets \frac{g_1}{b_1} \)
+        \For{\( i = 2 \) to \( n \)}
+        \State \( b_i \gets b_i - a_i c_{i-1} \) \Comment{Update diagonal}
+        \If{i $<$ n}
+        \State \( c_i \gets \frac{c_i}{b_i} \) \Comment{Update superdiagonal (except for the last row)}
+        \EndIf
+        \State \( g_i \gets \frac{g_i - a_i g_{i-1}}{b_i} \) \Comment{Update right-hand side}
+        \EndFor
+        \State \( v_n \gets g_n \) \Comment{Backward substitution starts here}
+        \For{\( i = n-1 \) to \( 1 \)}
+        \State \( v_i \gets g_i - c_i v_{i+1} \) \Comment{Solve for remaining \(v_i\)}
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+\subsection*{Problem b - Number of Floating-Point Operations (FLOPs)}
+
+We count the number of operations in each phase.
+
+\begin{itemize}
+    \item \textbf{Forward substitution:} For each \( i \) from 2 to \( n \), we have 3 FLOPs (2 divisions and 1 subtraction). This gives a total of \( 3(n-1) \) FLOPs.
+    \subitem 1 division for \( c_i \)
+    \subitem 1 division for  \(g_i\)
+    \subitem 1 subtraction for \(b_i\)
+    \item \textbf{Backward substitution:} For each \( i \) from \( n-1 \) to 1, we have 2 FLOPs (1 multiplication and 1 subtraction). This gives a total of \( 2(n-1) \) FLOPs.
+    \subitem 1 multiplication for \(c_i v_{i+1}\)
+    \subitem 1 subtraction for \(g_i - c_i v_{i+1}\)
+    \item \textbf{Total:} The total number of FLOPs is \( 3(n-1) + 2(n-1) = 5(n-1) \) = \( 5n - 5 \).
+\end{itemize}
+
+\section*{Problem 7}
+
+
 
 \end{document}
