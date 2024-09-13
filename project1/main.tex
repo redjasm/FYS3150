@@ -369,5 +369,47 @@ As we can see in \figurename{ \ref{fig:general_algorithm}} and \figurename{ \ref
 
 \subsection*{Problem c - Table of Maximum Relative Error}
 
+Got stuck on this one, and got the same value for all \( N \) values. The value was 494887.
 
+\begin{table*}
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{N} & \textbf{Max Relative Error} \\
+        \hline
+        10          & 494887                   \\
+        100         & 494887                   \\
+        1000        & 494887                   \\
+        \hline
+    \end{tabular}
+    \caption{Table of the maximum relative error for different values of \( N \).}
+    \label{tab:relative_error}
+\end{table*}
+
+\section*{Problem 9}
+\subsection*{Problem a - Specialized Algorithm for the Poisson Equation}
+I feel like I already did this in \textbf{Problem 6}.
+
+\section*{Problem 10}
+
+Timing tests:
+
+\begin{table*}
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{N} & \textbf{Elapsed Time} \\
+        \hline
+        10          & 1.208e-06 seconds      \\
+        100         & 6.375e-06 seconds      \\
+        1000        & 6.1125e-05 seconds     \\
+        10000       & 0.000607792 seconds    \\
+        100000      & 0.00563683 seconds     \\
+        1000000     & 0.0485015 seconds      \\
+        10000000    & 0.569739 seconds       \\
+        \hline
+    \end{tabular}
+    \caption{Table of the elapsed time for different values of \( N \).}
+    \label{tab:elapsed_time}
+\end{table*}
 \end{document}
