@@ -19,7 +19,9 @@ int main()
         arma::vec x = arma::linspace(0, N, n + 1);  // Discretized x values
         arma::vec g = arma::vec(n + 1);  // Right-hand side vector g
         arma::vec v = arma::vec(n + 1);  // Solution vector v
-        arma::vec scratch = arma::vec(n + 1);  // Scratch space (similar to the C code)
+        arma::vec scratch = arma::vec(n + 1);  // uses scratch space to avoid modifying its inputs for a-c, allowing them to be reused
+        // Scratch space (similar to the C code from Wikipedia)
+        // https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
 
         v(0) = 0;  // Boundary condition at x=0
         v(n) = 0;  // Boundary condition at x=1
@@ -81,7 +83,7 @@ int main()
         }
 
         // Create a filename based on the current iteration I and write to file
-        std::string filename = "out_e" + std::to_string(I) + ".txt";
+        std::string filename = "data_" + std::to_string(I) + ".txt";
         std::ofstream file(filename);
         file << A;
         file.close();

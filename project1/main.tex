@@ -82,7 +82,9 @@
 
 \maketitle
 
-\textit{List a link to your github repository here!}
+\textit{
+    \href{https://github.uio.no/josefam/FYS3150}{github.uio.no/josefam/FYS3150}
+}
 
 \section*{Problem 1}
 We check that $u(x) = 1 - (1 - e^{-10}) x - e^{-10 x}$ is an exact solution to our Poisson equation.
@@ -120,12 +122,13 @@ In problem 2 we will write a program that:
     \item It's recommended to use the \textit{\href{https://arma.sourceforge.net/}{armadillo}} library.
 \end{itemize}
 
-We can include figures using the \texttt{figure} environment. Whenever we include a figure or table, we \textit{must} make sure to actually refer to it in the main text, e.g.\ something like this: ``In figure \ref{fig:rel_err} we show \ldots''.
+As we can see in \figurename{ \ref{fig:poisson_exact}}, the exact solution to the Poisson equation is a curve that starts at 1 and decreases to 0 as $x$ approaches 1.
+
 \begin{figure}%[h!]
     \centering %Centers the figure
     \includegraphics[scale=0.75]{problem2/poisson_solution_plot.pdf} %Imports the figure.
-    \caption{Write a descriptive caption here that explains the content of the figure. Note the font size for the axis labels and ticks --- the size should approximately match the document font size.}
-    \label{fig:rel_err}
+    \caption{Plot of the exact solution to the Poisson equation.} %Short caption for the figure.
+    \label{fig:poisson_exact} %Label for referencing in the text.
 \end{figure}
 
 \section*{Problem 3}
@@ -324,6 +327,28 @@ We count the number of operations in each phase.
 \end{itemize}
 
 \section*{Problem 7}
+Here we will write an implementation of the Thomas algorithm we disscussed in 
+% write the word Problem 6 that refers to the section where the algorithm is described
+\textbf{Problem 6}.
+
+\begin{figure}%[h!]
+    \centering %Centers the figure
+    \includegraphics[scale=0.70]{problem7/general_algorithm_plot.pdf} %Imports the figure.
+    \caption{Plot of the general algorithm compared to the exact solution.} %Short caption for the figure.
+    \label{fig:general_algorithm} %Label for referencing in the text.
+\end{figure}
+
+\begin{figure}%[h!]
+    \centering %Centers the figure
+    \includegraphics[scale=0.70]{problem7/zoom_in_plot.pdf} %Imports the figure.
+    \caption{Zoomed in plot of the general algorithm compared to the exact solution.} %Short caption for the figure.
+    \label{fig:general_algorithm_zoomed} %Label for referencing in the text.
+\end{figure}
+
+As we can see in \figurename{ \ref{fig:general_algorithm}} and \figurename{ \ref{fig:general_algorithm_zoomed}}, the general algorithm is a good approximation to the exact solution.
+
+\section*{Problem 8}
+
 
 
 
