@@ -369,7 +369,14 @@ As we can see in \figurename{ \ref{fig:general_algorithm}} and \figurename{ \ref
 
 \subsection*{Problem c - Table of Maximum Relative Error}
 
-Got stuck on this one, and got the same value for all \( N \) values. The value was 494887.
+\figurename{ \ref{fig:max_relative_error}} shows the maximum relative error for different values of \( N \).
+
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[scale=0.70]{problem8/max_relative_error_plot.pdf} %Imports the figure.
+    \caption{Plot of the maximum relative error for different values of \( N \).} %Short caption for the figure.
+    \label{fig:max_relative_error} %Label for referencing in the text.
+\end{figure}
 
 \begin{table*}
     \centering
@@ -377,9 +384,9 @@ Got stuck on this one, and got the same value for all \( N \) values. The value 
         \hline
         \textbf{N} & \textbf{Max Relative Error} \\
         \hline
-        10          & 494887                   \\
-        100         & 494887                   \\
-        1000        & 494887                   \\
+        10          & 0.6740                   \\
+        100         & 0.9785                   \\
+        1000        & 0.9999                   \\
         \hline
     \end{tabular}
     \caption{Table of the maximum relative error for different values of \( N \).}
