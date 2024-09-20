@@ -20,7 +20,7 @@ int main() {
 
     // Parameters for Jacobi's method
     double eps = 1e-8;
-    int max_iterations = 10000;
+    int max_iterations = 1000000; 
     int iterations = 0;
 
     // Vectors to store eigenvalues and eigenvectors
