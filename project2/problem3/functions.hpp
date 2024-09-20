@@ -1,6 +1,7 @@
 #include <armadillo>
 #include <iostream>
 #include <cmath>
+#include <fstream>
 
 // 3 a)
 double max_offdiag_symmetric(const arma::mat& A, int& k, int& l) {

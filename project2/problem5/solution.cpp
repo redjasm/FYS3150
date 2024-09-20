@@ -1,5 +1,4 @@
 #include "../problem4/functions.hpp"
-#include <fstream>
 
 int main()
 {
