@@ -14,11 +14,11 @@ public:
     Particle(double charge, double mass, arma::vec position, arma::vec velocity);
 
     // Methods
-    arma::vec find_E_field(double V0, double d);
-    arma::vec find_B_field(double B0);
-    arma::vec find_Lorentz_force(arma::vec E, arma::vec B);
-    void print();
-    bool check_outside();
+    arma::vec find_E_field(double V0, double d) const;
+    arma::vec find_B_field(double B0) const;
+    arma::vec find_Lorentz_force(arma::vec E, arma::vec B) const;
+    void print() const;
+    bool check_outside() const;
     void is_outside();
     void reset();
 };
