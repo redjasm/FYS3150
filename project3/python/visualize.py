@@ -11,7 +11,7 @@ plt.plot(t, z)
 plt.xlabel('Time (µs)')
 plt.ylabel('z (µm)')
 plt.title('Motion in z direction')
-plt.savefig('build/figures/single_particle_z.png')
+plt.savefig('build/figures/single_particle_z.pdf')
 plt.close()
 
 # Two particles
