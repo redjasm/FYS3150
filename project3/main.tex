@@ -76,155 +76,272 @@
 
 \begin{document}
 
-\title{Project 3 - The Penning Trap}  % self-explanatory
+\title{Study of Ca+ Ions in a Penning Trap}  % self-explanatory
 \author{Émilie Valle, Joseph Ayman}       % self-explanatory
 \date{\today}                             % self-explanatory
 \noaffiliation                            % ignore this, but keep it.
 
 %This is how we create an abstract section.
 \begin{abstract}
-    We provide an overview of how to structure a scientific report. For concreteness, we consider the example of writing a report about an implementation of the midpoint rule of integration. For each section of the report we briefly discuss what the purpose of the given section is. We also provide examples of how to properly include equations, tables, algorithms, figures and references.
+     In this report, we investigate the behavior of Ca+ ions confined in a Penning trap. We develop a numerical simulation to model the motion of charged particles under the influence of static and time-dependent electromagnetic fields. Our study focuses on understanding the dynamics of single and multiple particles, the effects of particle interactions, and the resonance phenomena in the trap.
+    
 \end{abstract}
 \maketitle
 
 
 % ===========================================
-\section{Introduction}
-%
-The purpose of this report template is two-fold: to communicate how to write a scientific report on a numerical topic, while simultaneously provide a concrete ``minimal working example'' of such a report. As our example topic we will look at an implementation of something rather dull and simple, namely the \textit{midpoint rule for integration}.
+\section{Introduction}\label{sec:introduction}
+In modern experimental physics, the ability to precisely control and manipulate individual charged particles is crucial for a wide range of applications, from mass spectrometry to antimatter research. One of the most important tools for achieving this control is the \textbf{Penning trap}, a device that uses a combination of static electric and magnetic fields to confine charged particles in a well-defined region of space. Despite its relative simplicity, the Penning trap has become an indispensable instrument in experimental physics, playing a vital role in experiments at CERN such as ALPHA, AEgIS, and BASE, particularly in antimatter research.
 
-Throughout this example we will provide (hopefully) pedagogical commentary on report writing and structure, while at the same time present the midpoint rule for integration in a proper manner. To avoid confusion, we will from now on put pedagogical commentary in \textit{italics}. The next paragraph could have been part of the report, but we will leave it as a pedagogical comment: \textit{Writing reports, or papers, is a fundamental part of the scientific enterprise. It is vital to properly communicate precisely what has been done, what the results are and their implications. The motivation for this is to make the work understood and reproducible, so that others can both check and build on your work.}
+The fundamental principle behind the Penning trap, first developed by Hans Georg Dehmelt (who later won the 1989 Nobel Prize in Physics for this work)\footnote{\url{https://en.wikipedia.org/wiki/Penning_trap}}, involves the clever combination of a quadrupole electric field for axial confinement and a uniform magnetic field for radial confinement. The electric field creates a potential well that traps particles along the axis of the device, while the magnetic field induces a circular motion that prevents particles from escaping radially. This configuration allows for the precise manipulation and study of charged particles for extended periods.
 
-\textit{The main purpose of the introduction section is to provide context and motivation for the work, like we have done above. It is also common --- and quite useful --- to use the last paragraph of the introduction to outline the rest of the report, to tell the reader what they should expect in the different sections. We will do this next.}
+In this project, we develop a comprehensive numerical simulation of a Penning trap to study the dynamics of charged calcium ions (Ca$^+$) under various conditions. Our simulation implements both single-particle and many-particle scenarios, allowing us to investigate not only the fundamental behavior of individual ions but also the complex interactions that arise when multiple particles are present. We employ two numerical methods -- the Forward Euler method and the fourth-order Runge-Kutta method -- to solve the equations of motion, and we compare their accuracy and efficiency against analytical solutions where available.
 
-In Section \ref{sec:methods} we describe the mathematical background and formulate a concrete algorithm which can be implemented in any programming language. A selection of results from a validation test are presented in Section \ref{sec:results_and_discussion}. Here we also discuss our implementation of the algorithm in more detail. Finally, in Section \ref{sec:conclusion} we provide a short summary and outlook. All code developed for this report is available via a GitHub repository.\footnote{\url{https://github.uio.no/anderkve/FYS3150-forum}}
+The simulation explores several key aspects of the Penning trap:
+\begin{itemize}
+\item The motion of single particles, comparing numerical results with analytical solutions
+\item The dynamics of multiple particles, including the effects of Coulomb interactions
+\item The impact of time-varying electric fields on particle confinement
+\item The resonant frequencies that can lead to particle ejection from the trap
+\end{itemize}
 
-\textit{Now, since the toy example we study here is rather short and simple, our outline isn't particularly detailed. But for a report that is longer, a slightly more detailed outline might be useful.}
+We have implemented our simulation in C++ using the Armadillo library for efficient numerical computations, following an object-oriented approach that separates the particle and trap physics into distinct classes. This design allows for flexible testing of different configurations and easy extension to more complex scenarios.
 
+The report is organized as follows: In Section \ref{sec:methods}, we present the theoretical framework, deriving the equations of motion for particles in the trap and discussing the analytical solutions for the single-particle case. In Section \ref{sec:results_and_discussion}, we present our results, comparing the numerical methods' accuracy and exploring the behavior of multiple interacting particles. Finally, Section \ref{sec:conclusion} summarizes our findings and discusses potential applications and extensions of this work.
 
+All code developed for this report is available via a GitHub repository.\footnote{\url{https://github.uio.no/josefam/FYS3150/tree/main/project3}}
 % ===========================================
 \section{Methods}\label{sec:methods}
-%
-\textit{The main purpose of the ``Methods'' (or ``Theory'', or ``Algorithms'') section is to provide the reader with the necessary background knowledge to understand the work you will present.\footnote{Note that to get correct quotation marks in LaTeX, you cannot simply use the quotation mark symbol on your keyboard. Check the \texttt{.tex} file for this document to see the correct approach.} It should in general be sufficiently detailed for the reader to understand and reproduce what you have done. However, sometimes it can be a good idea to relegate the discussion of some technical topic to an appendix, to avoid too long discussions of what might be a a fairly minor or technical detail. You are of course free to divide this section into subsections, which we will do below.}
 
-Let $f$ be a continuous and differentiable function, $f: [a,b] \to \mathbb{R}$. Say we want to integrate this function over the entire interval $[a,b]$. To this end, we employ the midpoint rule for integration, which is defined by the equation~\cite{midpoint_rule}
-%
+\subsection{Physical Theory and Analytical Solutions}
+The Penning trap confines charged particles using a combination of static electric and magnetic fields. The total force $\mathbf{F}$ acting on a particle with charge $q$ and velocity $\mathbf{v}$ is given by the Lorentz force:
 \begin{equation}
-\label{eq:midpoint_rule}
-    I = \int_a^b f(x)\dd x \approx h\sum_{i=1}^{n} f(x_i).
+\mathbf{F} = q\mathbf{E} + q\mathbf{v}\times \mathbf{B},
 \end{equation}
-Here $n$ denotes a number of subintervals of the range $[a,b]$, each of length $h = (b-a)/n$, and $x_i$ is the midpoint of subinterval $i$, given by
+where $\mathbf{E}$ is the electric field and $\mathbf{B}$ is the magnetic field. From Newton's second law:
 \begin{equation}
-   x_i = a + \left(i-\frac{1}{2}\right) h,
+m\ddot{\mathbf{r}} = \mathbf{F},
 \end{equation}
-for $i = 1, 2, \ldots, n$. This equation can be written out explicitly (although in this case it is a bit silly):
-%
+In our ideal Penning trap, the electric field is derived from the potential:
 \begin{equation}
-    \begin{split}
-        \int_a^b f(x)\dd x & \approx h \sum_{i=1}^{n} f(x_i) \\
-                                    \\
-                                    & = h\left(f(x_1) + \cdots + f(x_{n})\right).
-    \end{split}
+V(x, y, z) = \frac{V_0}{2d^2}(2z^2 - x^2 - y^2),
 \end{equation}
-%
-\textit{Note the following: We have provided a definition for every single variable that appears in the equations. Always do this --- it greatly improves the transparency and readability of your work! Once a variable is defined, you can reuse it throughout the rest of the report without stating its definition. (This of course assumes that you use consistent notation, so that a symbol does not suddenly change meaning in the middle of your report.)}
-
-\textit{Also, note that we cited a source for our claim. There is no need to provide references for trivial or very well-known results, like Newton's second law, but you should cite material that is vital for your report.}
-
-\textit{If you want to refer to a specific equation from elsewhere in your text, use the equation number, just like you would refer to a table or figure, but also include a parenthesis: ``In Equation \eqref{eq:midpoint_rule} we see that \ldots''. The best approach is to use the \texttt{eqref} command, which adds the parenthesis automatically.} 
-
-\textit{Finally, please note the following two details on how to write equations: First, remember that equations are regarded as part of a sentence, meaning that you should follow the standard rules for punctuation. This typically means that your equations should be followed by a comma or a period. Second, make sure that you do not unintentionally include blank lines before or after the equation in your \texttt{.tex} file. LaTeX interprets blank lines as the beginning of a new paragraph, and will therefore indent the text after the equation. If you prefer having a bit of ``air'' in your LaTeX document, use an empty comment line.}
-
-To test our integration algorithm we will use it to integrate the polynomial $f(x) = x^3$ over the interval $[a,b] = [0,1]$. This is a suitable test case, since the integral has a known analytical solution,
+giving:
 \begin{equation}
-    \int_0^1 x^3 \dd x = \frac{1}{4}.
+\mathbf{E} = -\nabla V = \frac{V_0}{d^2}(x\hat{e}_x + y\hat{e}_y - 2z\hat{e}_z).
 \end{equation}
-In assessing the performance of our approach we will consider the relative error $\epsilon$, defined as
+The magnetic field is uniform along the z-axis:
 \begin{equation}
-    \epsilon = \abs{ \frac{I - I_{\text{approx}}}{I} },
+\mathbf{B} = B_0\hat{e}_z.
 \end{equation}
-where $I$ denotes the exact integral and $I_\text{approx}$ denotes the approximation obtained with our implementation of the midpoint rule algorithm.
+\subsubsection{Single-Particle Motion}
+For a single particle, combining Newton's law with the Lorentz force yields three coupled differential equations:
+\begin{align}
+\ddot{x} - \omega_0 \dot{y} - \frac{1}{2}\omega_z^2 x &= 0, \
+\ddot{y} + \omega_0 \dot{x} - \frac{1}{2}\omega_z^2 y &= 0, \
+\ddot{z} + \omega_z^2 z &= 0,
+\end{align}
+where we define the characteristic frequencies:
+\begin{equation}
+\omega_0 \equiv \frac{qB_0}{m}, \quad \omega_z^2 \equiv \frac{2qV_0}{md^2}.
+\end{equation}
+The equation for $z$ is a simple harmonic oscillator with general solution:
+\begin{equation}
+z(t) = A\cos(\omega_z t + \phi),
+\end{equation}
+where $A$ and $\phi$ are determined by initial conditions.
+\subsubsection{Complex Representation}
+The coupled equations for $x$ and $y$ can be elegantly combined by introducing a complex function $f(t) = x(t) + iy(t)$. Taking the second derivative:
+\begin{equation}
+\ddot{f} = \ddot{x} + i\ddot{y},
+\end{equation}
+and substituting from the original equations:
+\begin{equation}
+\ddot{f} = \omega_0(\dot{y} - i\dot{x}) + \frac{1}{2}\omega_z^2(x + iy).
+\end{equation}
+Using $i\dot{f} = i\dot{x} - \dot{y}$, we obtain:
+\begin{equation}
+\ddot{f} + i\omega_0\dot{f} - \frac{1}{2}\omega_z^2f = 0.
+\end{equation}
+The general solution to this equation is:
+\begin{equation}
+f(t) = A_+ e^{-i(\omega_+ t + \phi_+)} + A_- e^{-i(\omega_- t + \phi_-)},
+\end{equation}
+where:
+\begin{equation}
+\omega_\pm = \frac{\omega_0 \pm \sqrt{\omega_0^2 - 2\omega_z^2}}{2}.
+\end{equation}
+\subsubsection{Stability Conditions}
+For the solution to remain bounded (i.e., $|f(t)| < \infty$ as $t\to\infty$), $\omega_\pm$ must be real, requiring:
+\begin{equation}
+\omega_0^2 > 2\omega_z^2.
+\end{equation}
+In terms of the trap parameters, this gives:
+\begin{equation}
+\frac{q}{m} > \frac{4V_0}{B_0d^2}.
+\end{equation}
+The particle's radial bounds in the xy-plane are:
+\begin{equation}
+R_+ = A_+ + A_-, \quad R_- = |A_+ - A_-|,
+\end{equation}
+which can be proven by considering $|f(t)| = \sqrt{f(t)f^*(t)}$ and finding its extrema.
+\subsubsection{Multiple-Particle Dynamics}
+For $n$ particles with charges ${q_i}$ and masses ${m_i}$, the equations of motion include Coulomb interactions:
+\begin{equation}
+m_i\ddot{\mathbf{r}}_i = q_i\mathbf{E} + q_i\mathbf{v}i\times \mathbf{B} + k_e q_i\sum{j\neq i}q_j \frac{\mathbf{r}_i-\mathbf{r}_j}{|\mathbf{r}_i - \mathbf{r}_j|^3},
+\end{equation}
+where $k_e$ is Coulomb's constant and the sum represents the total Coulomb force on particle $i$ from all other particles.
 
-% -------------------------------------------
-\subsection*{The algorithm}
-%
-The algorithm for the midpoint rule is summarized in Algorithm~\ref{algo:midpointrule}. The basic idea behind the algorithm is to divide the integration range into to $n$ small subintervals of length $h$, and on each such subinterval approximate the function $f(x)$ by a constant function. The value for this constant function is taken to be the value of $f(x)$ evaluated at the midpoint of the given subinterval --- hence the name of the method.
-%
-\begin{figure}
-% NOTE: We only need \begin{figure} ... \end{figure} here because of a compatability issue between the 'revtex4-1' document class and the 'algorithm' environment.
-    \begin{algorithm}[H]
-    \caption{Midpoint rule for integration}
-    \label{algo:midpointrule}
-        \begin{algorithmic}
-            \Procedure{Midpoint rule}{$f, a, b, n$}
-            \State $I \leftarrow 0$        \Comment{Initialize the integral variable}
-            \State $h \leftarrow (b-a)/n$  \Comment{Compute the interval length}
-            \For{$i = 1, 2, \ldots, n$}
-            \State $x \leftarrow a + (i-1/2)h$  \Comment{Assign $x$ to the midpoint}  %This means x is assigned the value x + ih/2.
-            \State $I \leftarrow I + f(x)$  \Comment{Add contribution to integral} %Assign I to I + f(x)
-            \EndFor
-            \State $I \leftarrow Ih$  \Comment{Finalize the computation}
-            \EndProcedure
-        \end{algorithmic}
-    \end{algorithm}
-\end{figure}
+\subsection{Numerical Methods}
 
-\textit{As demonstrated in Algorithm~\ref{algo:midpointrule}, it is conventional to present algorithms in a way that is independent of any specific programming language. This ensures that it is the logic behind the algorithm that remains in focus, rather than the syntax of a particular programming language. In Algorithm~\ref{algo:midpointrule} we have also demonstrated a common notation: The right-to-left arrow ($\leftarrow$) means that we assign the value of everything on the right to the variable on the left. This is nothing but how the ``='' symbol functions in most programming languages, but the arrow notation makes it clear that we are in fact assigning a value, rather than stating that two things are equal.}
+\subsubsection{Forward Euler Method}
 
-% -------------------------------------------
-\subsection*{Tools}
-%
-\textit{This subsection is for informing the reader about the most important tools or software packages you have used, and what you have used them for. For instance, if you have used ChatGPT for anything, this subsection is where you should write about it.}
+To solve these equations numerically, we first implement the Forward Euler method. For a system of first-order differential equations $\dot{\mathbf{y}} = \mathbf{f}(t, \mathbf{y})$, the Forward Euler method advances the solution from time $t_n$ to $t_{n+1}$ using:
 
-We used the Python library \texttt{matplotlib} \cite{Hunter:2007} to produce all illustrations in this report. To parallelize our numerical integration code with \texttt{OpenMP}, we made use of examples taken from the tutorial in Ref.\ \cite{OpenMP_tutorial}.
+\begin{equation}
+    \mathbf{y}_{n+1} = \mathbf{y}_n + h\mathbf{f}(t_n, \mathbf{y}_n),
+\end{equation}
 
+where $h$ is the time step.
 
+\subsubsection{Fourth-Order Runge-Kutta Method}
+
+For improved accuracy, we also implement the fourth-order Runge-Kutta method (RK4). For the same system, RK4 advances the solution using:
+
+\begin{align}
+    \mathbf{k}_1 &= h\mathbf{f}(t_n, \mathbf{y}_n), \\
+    \mathbf{k}_2 &= h\mathbf{f}(t_n + \frac{h}{2}, \mathbf{y}_n + \frac{\mathbf{k}_1}{2}), \\
+    \mathbf{k}_3 &= h\mathbf{f}(t_n + \frac{h}{2}, \mathbf{y}_n + \frac{\mathbf{k}_2}{2}), \\
+    \mathbf{k}_4 &= h\mathbf{f}(t_n + h, \mathbf{y}_n + \mathbf{k}_3),
+\end{align}
+
+with the final update:
+
+\begin{equation}
+    \mathbf{y}_{n+1} = \mathbf{y}_n + \frac{1}{6}(\mathbf{k}_1 + 2\mathbf{k}_2 + 2\mathbf{k}_3 + \mathbf{k}_4).
+\end{equation}
+
+\subsection{Implementation Details}
+
+Our implementation uses two main classes:
+
+\begin{itemize}
+    \item \texttt{Particle}: Stores and manages particle properties (position, velocity, charge, mass)
+    \item \texttt{PenningTrap}: Handles the trap configuration and particle interactions
+\end{itemize}
+
+We use the following units throughout our implementation:
+\begin{itemize}
+    \item Length: micrometres ($\mathrm{\mu m}$)
+    \item Time: microseconds ($\mathrm{\mu s}$)
+    \item Mass: atomic mass unit ($\mathrm{u}$)
+    \item Charge: elementary charge ($\mathrm{e}$)
+\end{itemize}
+
+The default trap parameters are:
+\begin{itemize}
+    \item $B_0 = 9.65 \times 10^1 \frac{\mathrm{u}}{\mathrm{\mu s\, e}}$
+    \item $V_0 = 2.41 \times 10^6 \frac{\mathrm{u\, \mu m^2}}{\mathrm{\mu s^2\, e}}$
+    \item $d = 500\,\mathrm{\mu m}$
+\end{itemize}
+
+For the resonance studies, we modify the electric potential to include a time-dependent term:
+
+\begin{equation}
+    V_0 \rightarrow V_0(1 + f\cos(\omega_V t)),
+\end{equation}
+
+where $f$ is the relative amplitude and $\omega_V$ is the driving frequency.
+
+\subsection{Tools}
+The implementation of our Penning trap simulation was developed using several computational tools and libraries. The core simulation was written in C++, utilizing the Armadillo library for efficient linear algebra operations and vector calculations. We chose C++ for its performance advantages in numerical computations and object-oriented programming capabilities, while Armadillo provided optimized matrix operations essential for particle trajectory calculations.
+For data visualization and analysis, we employed Python with key libraries:
+\begin{itemize}
+\item \texttt{matplotlib} for generating plots and visualizing particle trajectories
+\item \texttt{numpy} for numerical operations and data handling
+\end{itemize}
+The development was conducted using Visual Studio Code as our primary text editor, chosen for its integrated debugging capabilities and extensive language support. For version control and code organization, we utilized Git through GitHub's services.
+ChatGPT was employed during the writing phase for proofreading and grammatical improvements of our scientific report. The report was written and compiled using Overleaf, an online LaTeX editor, with the \texttt{RevTeX} document class, which is commonly used for physics publications.
 % ===========================================
-\section{Results and discussion}\label{sec:results_and_discussion}
-%
-To test the midpoint rule algorithm, we perform the integration of $f(x)$ using different choices for the number of subintervals. The results are listed in Table~\ref{tab:midpointruletab}.\footnote{A general style recommendation is to avoid having vertical lines in tables. There are of course exceptions, but in most cases vertical lines will make a table less readable.} 
-We note that our implementation reproduces the analytical results to four digits precision when the integration range is divided into $n = 10^4$ subintervals. This indicates that that our implementation of the algorithm is correct.
-%
-\begin{table}[h!]
-    \centering
-    \caption{Approximate values for the integral of $f(x) = x^3$ on the interval $[0,1]$, as obtained with the midpoint rule with different numbers of integration subintervals.}
-    \begin{tabular}{c@{\hspace{1cm}} c}
-        \hline
-        Number of subintervals & Integral value \\
-        \hline
-        $10^1$  &  0.3086 \\
-        $10^2$  &  0.2550 \\
-        $10^3$  &  0.2505 \\
-        $10^4$  &  0.2500 \\
-        % $10$  &  0.3086 \\
-        % $100$  &  0.2550 \\
-        % $1 000$  &  0.2505 \\
-        % $10 000$  &  0.2500 \\
-        \hline
-    \end{tabular}\label{tab:midpointruletab}
-\end{table}
 
-In Figure~\ref{fig:rel_err} we show the relative error as a function of the number of subintervals $n$. We see that $\log_{10}(\epsilon)$ decreases linearly with $\log_{2}(n)$. From this, it should be possible to extract the convergence rate of our implementation of the midpoint rule. From a theoretical point of view we know that the midpoint rule should have a convergence rate of $\mathcal{O}(h^2)$. To properly verify our implementation, we should have estimated the convergence rate from our results and compared it to this theoretical rate. Without doing so, we cannot know that the our implementation of the algorithm is correct, even though we have seen that the numerical approximation converges to the correct answer in Table~\ref{tab:midpointruletab}.
+\section{Results and discussion}\label{sec:results_and_discussion}
+
+\subsection{Single Particle Dynamics}
+
+We begin our analysis by examining the motion of a single Ca$^+$ ion in the Penning trap, comparing our numerical solutions with the analytical prediction. Figure \ref{fig:single_particle} shows the particle's trajectory in the $z$-direction over a period of 50 $\mu$s, computed using both the Forward Euler and fourth-order Runge-Kutta (RK4) methods.
+
 \begin{figure}[h!]
-    \centering %Centers the figure
-    \includegraphics[scale=0.55]{imgs/rel_err.pdf} %Imports the figure.
-    \caption{The relative error versus the number of integration subintervals ($n$) when using the midpoint rule to estimate the integral $\int_0^1 x^3\dd x$. \textit{Given that this plot is based only on a handful of data points, it should also show the data points using some form of point markers, like the dots here. When presented only with a continuous line, it is not necessarily clear for the reader if the result is based on a large or small number of data points.}}
-    \label{fig:rel_err}
+    \centering
+    \includegraphics[width=0.48\textwidth]{build/figures/single_particle_motion.pdf}
+    \caption{Motion of a single Ca$^+$ ion in the Penning trap. The left panel shows the oscillatory motion in the $z$-direction, while the right panel displays the particle's trajectory in the $xy$-plane. Initial conditions: $\mathbf{r}_0 = (20,0,20)$ $\mu$m, $\mathbf{v}_0 = (0,25,0)$ $\mu$m/$\mu$s.}
+    \label{fig:single_particle}
 \end{figure}
 
-\textit{Note especially how we reference both the table and the figure with a short explanation of their content. Always do this! In the figure/table captions we can also add additional information, such as information about how the figure/table was produced. You can also do this in the main text if you like. When writing the figure/table captions, keep in mind the general rule of thumb that an expert on the topic should be able to understand the gist of your report simply by reading the abstract and look at the figures/tables and read their corresponding captions.}
+The particle exhibits stable oscillatory motion in the $z$-direction, with the RK4 method closely matching the analytical solution. The Forward Euler method, while capturing the general behavior, shows noticeable deviations from the exact solution, particularly over longer time periods. This difference in accuracy is expected, given the first-order nature of the Forward Euler method compared to the fourth-order accuracy of RK4.
 
-\textit{Although this is a somewhat silly example, please note the following: We are to-the-point in our discussion of the results, and we only make strong claims about what we are actually certain about. In the discussion it is important to try to be as concise as possible --- long paragraphs that only make very general points are typically of limited interest. Note that we also highlight aspects of our analysis that could have been improved and that might form a topic for future work.}
+\subsection{Two-Particle System}
 
+The dynamics become more complex when we introduce a second particle into the trap. Figure \ref{fig:two_particles} compares the trajectories of two particles with and without Coulomb interactions.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.48\textwidth]{build/figures/two_particles_motion_two_particles_without_interaction.pdf}
+    \caption{Trajectories of two Ca$^+$ ions in the Penning trap without Coulomb interaction. The motion combines cyclotron orbits in the $xy$-plane with harmonic oscillation in the $z$-direction.}
+    \label{fig:two_particles}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{build/figures/two_particles_motion_two_particles_with_interaction.pdf}
+    \caption{Trajectories of two Ca$^+$ ions with Coulomb interaction enabled. The repulsive force between the particles modifies their orbits but does not destabilize the confinement.}
+    \label{fig:two_particles_coulomb}
+\end{figure}
+
+Without Coulomb interactions (Figure \ref{fig:two_particles}), each particle follows an independent trajectory determined solely by the external electromagnetic fields. The motion combines cyclotron orbits in the $xy$-plane with harmonic oscillation in the $z$-direction. When Coulomb interactions are enabled (Figure \ref{fig:two_particles_coulomb}), we observe modified trajectories due to the mutual repulsion between the particles. Despite this additional force, both particles remain confined within the trap, demonstrating the robustness of the Penning trap's confinement mechanism.
+
+\subsection{Resonance Analysis}
+
+Our investigation of resonance phenomena reveals how the trap's confinement capabilities can be compromised by specific driving frequencies. Figure \ref{fig:resonance} shows the fraction of particles remaining in the trap after 500 $\mu$s of simulation time, for three different amplitudes of the time-varying potential.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{build/figures/resonance_analysis.pdf}
+    \caption{Fraction of particles remaining in the trap as a function of driving frequency $\omega_V$ for three different amplitudes $f$. Strong particle loss occurs at frequencies that are multiples of the axial frequency $\omega_z$.}
+    \label{fig:resonance}
+\end{figure}
+
+Several key observations emerge from the resonance analysis:
+
+1. Clear resonances appear at frequencies that are multiples of the axial frequency $\omega_z \approx 0.6936$ MHz.
+2. The width of the resonance peaks increases with the amplitude $f$ of the time-varying potential.
+3. Higher amplitudes lead to particle loss over a broader range of frequencies.
+
+The fine-grained analysis around $\omega_V = 2\omega_z$ reveals subtle differences between systems with and without Coulomb interactions. When Coulomb interactions are present, the particle loss pattern becomes less sharp, suggesting that inter-particle forces can both enhance and inhibit the resonant ejection process.
+
+These results demonstrate that while the Penning trap provides stable confinement under normal conditions, specific combinations of driving frequencies and amplitudes can lead to systematic particle loss. Understanding these resonance patterns is crucial for maintaining stable particle confinement in experimental settings.
+\subsection{Error Analysis}
+
+To validate our numerical methods, we conducted a detailed error analysis by comparing our numerical solutions with the analytical solution for a single particle. We simulated the system for 50 $\mu$s using four different time step sizes, corresponding to $n = 4000$, $8000$, $16000$, and $32000$ steps. Figure \ref{fig:error_analysis} shows the relative error evolution for both the Forward Euler and RK4 methods.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.48\textwidth]{build/figures/error_analysis.pdf}
+    \caption{Relative error analysis for Forward Euler (left) and RK4 (right) methods with different numbers of time steps. The error is calculated relative to the analytical solution for a single particle's trajectory.}
+    \label{fig:error_analysis}
+\end{figure}
+
+The Forward Euler method shows significantly larger errors compared to RK4, with relative errors typically several orders of magnitude higher. For the Forward Euler method, we obtained an error convergence rate of 1.46, while the RK4 method achieved a convergence rate of 1.27. Interestingly, while the Forward Euler method shows a faster convergence rate, its absolute error remains substantially larger than RK4 across all time step sizes.
+
+This difference in accuracy is particularly evident when examining the particle's trajectory over longer time periods. The RK4 method maintains stable orbital patterns consistent with the analytical solution, while the Forward Euler method shows gradual deviation from the expected trajectory, especially in the xy-plane where the motion is more complex due to the coupling between x and y coordinates.
+
+These results confirm the superior accuracy of the RK4 method for our Penning trap simulation, making it the preferred choice for our subsequent analyses of multi-particle systems and resonance phenomena.
 
 % ===========================================
 \section{Conclusion}\label{sec:conclusion}
 %
-\textit{In this section we state three things in a concise manner: what we have done, what we have found, and what should or could be done in the future.}
 
-We have investigated an implementation of the midpoint rule for numerical integration. As a first validation test we have checked that our implementation of the method reproduces the analytical result for the definite integral of $f(x) = x^3$ on $x \in [0,1]$, achieving a four-digit precision when the integration range is divided into $n=10^4$ subintervals. Furthermore, we have presented results for how the relative error of the method varies with the number of subintervals. To use these results to extract a precise estimate for the convergence rate of the method remains a topic for future work. As such, while our implementation of the midpoint rule has passed the initial validation tests, more work is needed to fully assess the validity of the implementation.
-
-
+We have successfully developed and validated a numerical simulation of a Penning trap for studying the dynamics of Ca$^+$ ions. Through comparison with analytical solutions, we demonstrated that our fourth-order Runge-Kutta implementation provides accurate particle trajectory predictions, significantly outperforming the Forward Euler method in terms of accuracy and stability over long simulation times.
+Our investigation of two-particle dynamics revealed that while Coulomb interactions modify particle trajectories, they do not compromise the fundamental confinement mechanism of the trap. The addition of a time-dependent electric potential identified specific resonance frequencies, particularly at multiples of the axial frequency $\omega_z$, where particles are systematically ejected from the trap. The efficiency of this particle ejection increases with the amplitude of the time-varying potential, and the presence of Coulomb interactions tends to broaden these resonance features.
 % ===========================================
 % \section*{Appendix A}\label{sec:AppendixA}
 
@@ -239,3 +356,60 @@ We have investigated an implementation of the midpoint rule for numerical integr
 
 
 \end{document}
+
+\section{Problem 1}
+The eq(15) is :
+\begin{equation}
+    \Ddot{z}+\omega_z^2z=0
+\end{equation}
+and it's a basic harmonic equation of which general solution is :
+\begin{equation}
+    z(t)=Acos(\omega_zt)+Bsin(\omega_zt)
+\end{equation}
+with A and B as constants and $\omega$ as angular frequency where $\omega_z = \sqrt{\frac{2qV_o}{md^2}}$.\\
+
+\section{Problem 2}
+We have to show that the two following equations can be rewritten as the third one with $f(t) = x(t) + iy(t)$.
+\begin{equation}
+    \Ddot{x}-\omega_0\dot{y}-\frac{1}{2}\omega_z^2x=0
+\end{equation}
+\begin{equation}
+    \Ddot{y}+\omega_0\dot{x}-\frac{1}{2}\omega_z^2y=0
+\end{equation}
+\begin{equation}
+    \Ddot{f}+i\omega_0\dot{f}-\frac{1}{2}\omega_z^2f=0
+\end{equation}
+First step : derivate $f(t) = x(t) + iy(t)$.
+\begin{equation}
+    \dot{f}(t) = \dot{x}(t) + i\dot{y}(t)
+\end{equation}
+\begin{equation}
+    \Ddot{f}(t) = \Ddot{x}(t) + i\Ddot{y}(t)
+\end{equation}
+Second step : rewrite the eq(3) and eq(4) in function of $\Ddot{x}$ and $\Ddot{y}$.
+\begin{equation}
+    \Ddot{x} = \omega_0\dot{y}+\frac{1}{2}\omega_z^2x
+\end{equation}
+\begin{equation}
+    \Ddot{y}=-\omega_0\dot{x}+\frac{1}{2}\omega_z^2y
+\end{equation}
+Third step : add eq(8) to the multiplication of i by eq(9) and simplify.
+\begin{equation}
+    \Ddot{x}+i\Ddot{y}=\omega_0(\dot{y}-i\dot{x})+\frac{1}{2}\omega_z^2(x+iy)
+\end{equation}
+\begin{equation}
+    \Ddot{f}=-i\omega_0\dot{f}+\frac{1}{2}\omega_z^2f
+\end{equation}
+So we found :
+\begin{equation}
+    \Ddot{f}+i\omega_0\dot{f}-\frac{1}{2}\omega_z^2f = 0
+\end{equation}
+
+\section{Problem 3}
+ok,hmm\\
+here answers for problem 3 : we just have to have $\omega_0^2 \geq 2\omega_z^2$\\
+with $\omega_0=\frac{qB_0}{m}$ and $\omega_z^2=\frac{2qV_0}{md^2}$ we just have to have $B_0^2 \geq \frac{2V_0}{d^2}$.
+
+\section{Problem 4}
+Retake the eq(17), $r(t)=\abs{f(t)}$, $(\abs{z_1+z_2})^2=\abs{z_1}^2+\abs{z_2}^2+2Re(z_1*z_2)$, cos oscillate between 1 and -1, so R+ is when cos(...)=1 and R- is when cos(...)=-1, then we refind R+ and R-.
+
