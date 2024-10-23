@@ -47,41 +47,65 @@ arma::vec PenningTrap::total_force(int i, double t) {
 }
 
 void PenningTrap::evolve_RK4(double dt, double t) {
-    std::vector<Particle> original_particles = particles;
-
-    for (int i = 0; i < particles.size(); ++i) {
-        arma::vec k1_r = dt * particles[i].v;
-        arma::vec k1_v = dt * total_force(i, t) / particles[i].m;
-
-        particles[i].r += 0.5 * k1_r;
-        particles[i].v += 0.5 * k1_v;
-
-        arma::vec k2_r = dt * particles[i].v;
-        arma::vec k2_v = dt * total_force(i, t + 0.5*dt) / particles[i].m;
-
-        particles[i].r = original_particles[i].r + 0.5 * k2_r;
-        particles[i].v = original_particles[i].v + 0.5 * k2_v;
-
-        arma::vec k3_r = dt * particles[i].v;
-        arma::vec k3_v = dt * total_force(i, t + 0.5*dt) / particles[i].m;
-
-        particles[i].r = original_particles[i].r + k3_r;
-        particles[i].v = original_particles[i].v + k3_v;
-
-        arma::vec k4_r = dt * particles[i].v;
-        arma::vec k4_v = dt * total_force(i, t + dt) / particles[i].m;
-
-        particles[i].r = original_particles[i].r + (k1_r + 2*k2_r + 2*k3_r + k4_r) / 6;
-        particles[i].v = original_particles[i].v + (k1_v + 2*k2_v + 2*k3_v + k4_v) / 6;
+    std::vector<arma::vec> k1_r(particles.size());
+    std::vector<arma::vec> k1_v(particles.size());
+    std::vector<arma::vec> k2_r(particles.size());
+    std::vector<arma::vec> k2_v(particles.size());
+    std::vector<arma::vec> k3_r(particles.size());
+    std::vector<arma::vec> k3_v(particles.size());
+    std::vector<arma::vec> k4_r(particles.size());
+    std::vector<arma::vec> k4_v(particles.size());
+    
+    std::vector<arma::vec> original_r(particles.size());
+    std::vector<arma::vec> original_v(particles.size());
+    
+    // Store original positions and velocities
+    for (size_t i = 0; i < particles.size(); i++) {
+        original_r[i] = particles[i].r;
+        original_v[i] = particles[i].v;
     }
-
-    for (auto& p : particles) {
-        if (arma::norm(p.r) > d) {
-            p.is_outside();
+    
+    // k1
+    for (size_t i = 0; i < particles.size(); i++) {
+        k1_r[i] = dt * particles[i].v;
+        k1_v[i] = dt * total_force(i, t) / particles[i].m;
+        particles[i].r = original_r[i] + 0.5 * k1_r[i];
+        particles[i].v = original_v[i] + 0.5 * k1_v[i];
+    }
+    
+    // k2
+    for (size_t i = 0; i < particles.size(); i++) {
+        k2_r[i] = dt * particles[i].v;
+        k2_v[i] = dt * total_force(i, t + 0.5*dt) / particles[i].m;
+        particles[i].r = original_r[i] + 0.5 * k2_r[i];
+        particles[i].v = original_v[i] + 0.5 * k2_v[i];
+    }
+    
+    // k3
+    for (size_t i = 0; i < particles.size(); i++) {
+        k3_r[i] = dt * particles[i].v;
+        k3_v[i] = dt * total_force(i, t + 0.5*dt) / particles[i].m;
+        particles[i].r = original_r[i] + k3_r[i];
+        particles[i].v = original_v[i] + k3_v[i];
+    }
+    
+    // k4
+    for (size_t i = 0; i < particles.size(); i++) {
+        k4_r[i] = dt * particles[i].v;
+        k4_v[i] = dt * total_force(i, t + dt) / particles[i].m;
+    }
+    
+    // Final update
+    for (size_t i = 0; i < particles.size(); i++) {
+        particles[i].r = original_r[i] + (k1_r[i] + 2.0*k2_r[i] + 2.0*k3_r[i] + k4_r[i]) / 6.0;
+        particles[i].v = original_v[i] + (k1_v[i] + 2.0*k2_v[i] + 2.0*k3_v[i] + k4_v[i]) / 6.0;
+        
+        // Check if particle is outside
+        if (arma::norm(particles[i].r) > d && !particles[i].outside) {
+            particles[i].is_outside();
         }
     }
 }
-
 void PenningTrap::evolve_forward_Euler(double dt, double t) {
     for (auto& p : particles) {
         p.r += dt * p.v;
