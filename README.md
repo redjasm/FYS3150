@@ -21,3 +21,4 @@ To run the code, run the following command in the terminal
 ### Projects
 - Project 1: [main.pdf](./project1/main.pdf)
 - Project 2: [main.pdf](./project2/main.pdf) with [Émilie Valle](https://github.uio.no/emilival)
+- Project 3: [main.pdf](./project3/main.pdf) with [Émilie Valle](https://github.uio.no/emilival)
