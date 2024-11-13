@@ -1,5 +1,16 @@
 # Compiler
-CXX = g++-12
+# CXX = g++-12
+
+# If the OS is macOS, use g++-12
+ifeq ($(shell uname), Darwin)
+	CXX = g++-12
+endif
+
+# If the compiler is not found, use g++
+ifeq (, $(shell which $(CXX)))
+	CXX = g++
+endif
+
 
 # Compiler flags
 CXXFLAGS = -std=c++17 -O3 -I include $(shell pkg-config --cflags armadillo) -fopenmp
