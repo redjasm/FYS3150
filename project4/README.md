@@ -39,3 +39,7 @@ Then navigate back if you havent, and run the python scripts to generate the plo
 ```bash
 python plot_all.py
 ```
+
+## Notes
+
+`phase_transition_improved.cpp`is intentionally left out of the `Makefile` as it takes a long time to run. You can run it by uncommenting the line in the `Makefile` and running `make` again.

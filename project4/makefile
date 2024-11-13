@@ -28,6 +28,7 @@ SRC_BURNIN = src/burning_study.cpp
 SRC_ENERGY_DIST = src/energy_distribution.cpp
 SRC_PARALLEL = src/parallel_study.cpp
 SRC_PHASE_TRANSITION = src/phase_transition.cpp
+# SRC_PHASE_TRANSITION_IMPROVED = src/phase_transition_improved.cpp
 
 # Target executables
 TARGET_MAIN = $(BUILD_DIR)/ising.exe
@@ -35,9 +36,10 @@ TARGET_BURNIN = $(BUILD_DIR)/burning.exe
 TARGET_ENERGY_DIST = $(BUILD_DIR)/energy_dist.exe
 TARGET_PARALLEL = $(BUILD_DIR)/parallel.exe
 TARGET_PHASE_TRANSITION = $(BUILD_DIR)/phase_transition.exe
+# TARGET_PHASE_TRANSITION_IMPROVED = $(BUILD_DIR)/phase_transition_improved.exe
 
 # Default target
-all: $(BUILD_DIR) $(TARGET_MAIN) $(TARGET_BURNIN) $(TARGET_ENERGY_DIST) $(TARGET_PARALLEL) $(TARGET_PHASE_TRANSITION) compiler
+all: $(BUILD_DIR) $(TARGET_MAIN) $(TARGET_BURNIN) $(TARGET_ENERGY_DIST) $(TARGET_PARALLEL) $(TARGET_PHASE_TRANSITION) compiler # $(TARGET_PHASE_TRANSITION_IMPROVED)
 
 # Create build directory if it doesn't exist
 $(BUILD_DIR):
@@ -62,6 +64,10 @@ $(TARGET_PARALLEL): $(SRC_PARALLEL) $(SRC_ISING)
 # Build phase transition study executable
 $(TARGET_PHASE_TRANSITION): $(SRC_PHASE_TRANSITION) $(SRC_ISING)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+
+# Build improved phase transition study executable
+# $(TARGET_PHASE_TRANSITION_IMPROVED): $(SRC_PHASE_TRANSITION_IMPROVED) $(SRC_ISING)
+# 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 compiler:
 	@echo "Compiler: $(CXX)"
