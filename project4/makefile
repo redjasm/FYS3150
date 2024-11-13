@@ -16,15 +16,17 @@ SRC_MAIN = src/main.cpp
 SRC_BURNIN = src/burning_study.cpp
 SRC_ENERGY_DIST = src/energy_distribution.cpp
 SRC_PARALLEL = src/parallel_study.cpp
+SRC_PHASE_TRANSITION = src/phase_transition.cpp
 
 # Target executables
 TARGET_MAIN = $(BUILD_DIR)/ising.exe
 TARGET_BURNIN = $(BUILD_DIR)/burning.exe
 TARGET_ENERGY_DIST = $(BUILD_DIR)/energy_dist.exe
 TARGET_PARALLEL = $(BUILD_DIR)/parallel.exe
+TARGET_PHASE_TRANSITION = $(BUILD_DIR)/phase_transition.exe
 
 # Default target
-all: $(BUILD_DIR) $(TARGET_MAIN) $(TARGET_BURNIN) $(TARGET_ENERGY_DIST) $(TARGET_PARALLEL)
+all: $(BUILD_DIR) $(TARGET_MAIN) $(TARGET_BURNIN) $(TARGET_ENERGY_DIST) $(TARGET_PARALLEL) $(TARGET_PHASE_TRANSITION) compiler
 
 # Create build directory if it doesn't exist
 $(BUILD_DIR):
@@ -44,6 +46,10 @@ $(TARGET_ENERGY_DIST): $(SRC_ENERGY_DIST) $(SRC_ISING)
 
 # Build parallel study executable
 $(TARGET_PARALLEL): $(SRC_PARALLEL) $(SRC_ISING)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+
+# Build phase transition study executable
+$(TARGET_PHASE_TRANSITION): $(SRC_PHASE_TRANSITION) $(SRC_ISING)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 compiler:

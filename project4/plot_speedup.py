@@ -5,10 +5,10 @@ import os
 
 # Create directories if they don't exist
 os.makedirs('figures', exist_ok=True)
-os.makedirs('data/output', exist_ok=True)
+os.makedirs('data', exist_ok=True)
 
 # Read timing data
-data = pd.read_csv('data/output/parallel_timing.csv')
+data = pd.read_csv('data/parallel_timing.csv')
 
 plt.figure(figsize=(10, 6))
 

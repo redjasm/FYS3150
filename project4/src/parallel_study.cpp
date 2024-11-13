@@ -41,10 +41,9 @@ int main() {
     
     // Create directories
     create_directory("data");
-    create_directory("data/output");
     
     // Create output file
-    std::ofstream outfile("data/output/parallel_timing.csv");
+    std::ofstream outfile("data/parallel_timing.csv");
     outfile << "threads,time,speedup" << std::endl;
     
     // Run serial version
