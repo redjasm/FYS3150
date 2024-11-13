@@ -2,7 +2,7 @@ import os
 
 # List of plot files to run
 plot_files = [
-    "plot_burnin.py",
+    "plot_burning.py",
     "plot_critical_temp.py",
     "plot_energy_dist.py",
     "plot_phase_transition_improved.py",
