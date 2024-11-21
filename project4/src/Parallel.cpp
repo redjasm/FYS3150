@@ -5,15 +5,6 @@
 #include <fstream>
 #include <sys/stat.h>
 
-// Function to ensure directory exists
-void create_directory(const std::string& path) {
-    #ifdef _WIN32
-        _mkdir(path.c_str());
-    #else
-        mkdir(path.c_str(), 0777);
-    #endif
-}
-
 double run_simulation(int L, double T, int n_cycles, int n_threads) {
     omp_set_num_threads(n_threads);
     double start_time = omp_get_wtime();
@@ -38,9 +29,6 @@ int main() {
     int L = 100;
     double T = 2.4;
     int n_cycles = 10000;
-    
-    // Create directories
-    create_directory("data");
     
     // Create output file
     std::ofstream outfile("data/parallel_timing.csv");

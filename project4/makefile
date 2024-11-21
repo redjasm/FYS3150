@@ -22,6 +22,7 @@ BUILD_DIR = build
 SRC_DIR = src
 INCLUDE_DIR = include
 DATA_DIR = data
+FIGURES_DIR = figures
 
 # Source files
 SRC_ISING = $(SRC_DIR)/IsingModel.cpp
@@ -45,13 +46,16 @@ all: directories $(TARGET_ISING) $(TARGET_BURNIN) $(TARGET_ENERGY_DIST) \
      $(TARGET_PARALLEL) $(TARGET_PHASE_TRANS) $(TARGET_PHASE_TRANS_IMPROVED)
 
 # Create required directories
-directories: $(BUILD_DIR) $(DATA_DIR)
+directories: $(BUILD_DIR) $(DATA_DIR) $(FIGURES_DIR)
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 $(DATA_DIR):
 	mkdir -p $(DATA_DIR)
+
+$(FIGURES_DIR):
+	mkdir -p $(FIGURES_DIR)
 
 # Build rules
 $(TARGET_ISING): $(SRC_ISING_TESTS) $(SRC_ISING)
@@ -81,9 +85,10 @@ compiler:
 clean:
 	rm -rf $(BUILD_DIR)
 
-# Remove generated data
+# Remove generated data and figures
 cleandata:
 	rm -rf $(DATA_DIR)
+	rm -rf $(FIGURES_DIR)
 
 # Clean everything
 distclean: clean cleandata

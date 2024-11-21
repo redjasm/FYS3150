@@ -7,8 +7,6 @@ void study_energy_distribution(int L, double T, int n_cycles, int n_samples, std
     // Create model
     IsingModel model(L, T);
     
-    // Create data directory if it doesn't exist
-    std::system("mkdir -p data");
     std::string full_path = "data/" + filename;
     std::ofstream outfile(full_path);
     

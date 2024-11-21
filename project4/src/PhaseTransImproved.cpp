@@ -23,8 +23,6 @@ void study_phase_transitions(std::vector<int> lattice_sizes,
                              int n_samples, // Number of independent runs
                              std::string filename)
 {
-    // Create output directories
-    std::system("mkdir -p data");
 
     // Open output file
     std::string filepath = "data/" + filename + ".csv";

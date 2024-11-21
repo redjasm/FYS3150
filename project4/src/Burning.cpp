@@ -12,12 +12,9 @@ void study_burnin(int L, double T, int n_cycles, bool random_start, std::string 
         model.initialize_ordered();
     }
 
-    // Create data directory if it doesn't exist
-    std::string data_dir = "data";
-    std::system("mkdir -p data");
 
     // Open output file with full path
-    std::string full_path = data_dir + "/" + filename;
+    std::string full_path = "data/" + filename;
     std::ofstream outfile(full_path);
     if (!outfile.is_open()) {
         std::cerr << "Failed to open file: " << full_path << std::endl;
