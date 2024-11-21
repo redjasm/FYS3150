@@ -13,6 +13,24 @@ You might need to edit the `Makefile` to include the correct path to the Armadil
 
 The make file will run g++-12 if you have mac and g++ if you have other OS.
 
+## Code Structure
+
+- `src/`
+  - `IsingModel.cpp`: Core implementation of the Ising model
+  - `Burning.cpp`: Study of burn-in behavior (Problem 5)
+  - `EnergyDist.cpp`: Energy distribution analysis (Problem 6)
+  - `Parallel.cpp`: Parallelization performance study (Problem 7)
+  - `PhaseTrans.cpp`: Phase transition analysis (Problem 8)
+  
+- `include/`
+  - `IsingModel.hpp`: Class definition for Ising model
+
+- `scripts/`
+  - Python scripts for data analysis and visualization
+- `makefile`: Makefile for building the code
+- `plot_all.py`: Python script to generate all plots
+- `main.pdf`: Project report
+
 ## Building the Code
 
 First navigate to the project directory, then make the code:
