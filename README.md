@@ -11,3 +11,4 @@ This course gives an introduction to numerical methods for solving problems in p
 - Project 2: [main.pdf](./project2/main.pdf) with [Émilie Valle](https://github.uio.no/emilival)
 - Project 3: [main.pdf](./project3/main.pdf) with [Émilie Valle](https://github.uio.no/emilival)
 - Project 4: [main.pdf](./project4/main.pdf) with [Émilie Valle](https://github.uio.no/emilival)
+
