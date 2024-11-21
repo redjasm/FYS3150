@@ -26,7 +26,7 @@ double run_simulation(int L, double T, int n_cycles, int n_threads) {
 }
 
 int main() {
-    int L = 100;
+    int L = 100; // Lattice size
     double T = 2.4;
     int n_cycles = 10000;
     

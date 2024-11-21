@@ -91,7 +91,7 @@ cleandata:
 	rm -rf $(FIGURES_DIR)
 
 # Clean everything
-distclean: clean cleandata
+cleanall: clean cleandata
 
 # Phony targets
 .PHONY: all clean cleandata distclean compiler directories
