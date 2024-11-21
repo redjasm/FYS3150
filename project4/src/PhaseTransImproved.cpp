@@ -25,7 +25,7 @@ void study_phase_transitions(std::vector<int> lattice_sizes,
 {
 
     // Open output file
-    std::string filepath = "data/" + filename + ".csv";
+    std::string filepath = "../data/" + filename + ".csv";
     std::ofstream outfile(filepath);
     outfile << std::setprecision(10);
 

@@ -26,7 +26,7 @@ void study_phase_transitions(const std::vector<int> &lattice_sizes,
     auto start_time = std::chrono::high_resolution_clock::now();
 
     // Open output file
-    std::string filepath = "data/" + filename + ".csv";
+    std::string filepath = "../data/" + filename + ".csv";
     std::ofstream outfile(filepath);
     if (!outfile.is_open())
     {

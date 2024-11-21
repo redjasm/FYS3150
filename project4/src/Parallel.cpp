@@ -31,7 +31,7 @@ int main() {
     int n_cycles = 10000;
     
     // Create output file
-    std::ofstream outfile("data/parallel_timing.csv");
+    std::ofstream outfile("../data/parallel_timing.csv");
     outfile << "threads,time,speedup" << std::endl;
     
     // Run serial version

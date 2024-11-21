@@ -7,7 +7,7 @@ void study_energy_distribution(int L, double T, int n_cycles, int n_samples, std
     // Create model
     IsingModel model(L, T);
     
-    std::string full_path = "data/" + filename;
+    std::string full_path = "../data/" + filename;
     std::ofstream outfile(full_path);
     
     outfile << std::setprecision(10);
