@@ -18,7 +18,7 @@ private:
     arma::cx_vec extract_diagonal_elements(const arma::sp_cx_mat &A);
 
     // Helper function for normalization
-    // double calculate_probability_sum(const arma::cx_mat& U);
+    double calculate_probability_sum(const arma::cx_mat& U);
 
 public:
     // Default constructor
@@ -53,10 +53,6 @@ public:
 
     // Normalize state
     void normalize_state(arma::cx_mat& U);
-
-    // Helper function for normalization
-    // Public to be used in main.cpp
-    double calculate_probability_sum(const arma::cx_mat& U);
 
     // Create potential for double-slit setup
     arma::mat create_potential(int M, double h, double v0);

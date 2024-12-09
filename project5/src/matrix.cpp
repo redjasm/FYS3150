@@ -221,24 +221,26 @@ void Matrix::normalize_state(arma::cx_mat& U) {
 }
 
 arma::mat Matrix::create_potential(int M, double h, double v0) {
+    // Create potential matrix for internal points (M-2 x M-2)
     arma::mat V(M-2, M-2, arma::fill::zeros);
     
-    // Calculate indices for wall position
-    int wall_thickness = round(0.02/h);  // Given: wall thickness = 0.02
-    int wall_center = round(0.5/h) - 1;  // Wall at x = 0.5
+    // Calculate indices for wall positions
+    int wall_thickness = round(0.02/h);  // Wall thickness = 0.02
+    int wall_center = round(0.5/h) - 1;  // Wall at x = 0.5 (subtract 1 for 0-based indexing)
+    int slit_separation = round(0.05/h);  // Distance between slits = 0.05
+    int slit_aperture = round(0.05/h);   // Slit opening = 0.05
     int y_center = (M-2)/2;              // Center in y-direction
     
-    // Calculate slit parameters (in grid points)
-    int slit_aperture = round(0.05/h);    // Given: slit aperture = 0.05
-    int slit_separation = round(0.05/h);   // Given: separation = 0.05
+    // Calculate wall start and end positions in x-direction
+    int x_start = wall_center - wall_thickness/2;
+    int x_end = wall_center + wall_thickness/2;
     
-    // Calculate slit center positions (symmetric around y_center)
-    int slit1_center = y_center - slit_separation/2;
-    int slit2_center = y_center + slit_separation/2;
+    // Calculate slit positions (symmetric around y_center)
+    int slit1_center = y_center - slit_separation/2 - slit_aperture/2;
+    int slit2_center = y_center + slit_separation/2 + slit_aperture/2;
     
-    // Add the wall with slits
-    for (int i = wall_center - wall_thickness/2; 
-         i <= wall_center + wall_thickness/2; i++) {
+    // Fill in the wall potential
+    for (int i = x_start; i <= x_end; i++) {
         for (int j = 0; j < M-2; j++) {
             // Default: add wall
             V(i,j) = v0;
@@ -248,7 +250,7 @@ arma::mat Matrix::create_potential(int M, double h, double v0) {
                            (j <= slit1_center + slit_aperture/2);
             bool in_slit2 = (j >= slit2_center - slit_aperture/2) && 
                            (j <= slit2_center + slit_aperture/2);
-                
+            
             // If in slit, set potential to 0
             if (in_slit1 || in_slit2) {
                 V(i,j) = 0.0;
