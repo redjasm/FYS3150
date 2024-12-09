@@ -57,5 +57,8 @@ public:
     // Helper function for normalization
     // Public to be used in main.cpp
     double calculate_probability_sum(const arma::cx_mat& U);
+
+    // Create potential for double-slit setup
+    arma::mat create_potential(int M, double h, double v0);
 };
 #endif
