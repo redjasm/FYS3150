@@ -1,28 +1,39 @@
-#ifndef MATRIX_HPP
-#define MATRIX_HPP
+#ifndef MATRIX_H
+#define MATRIX_H
 
 #include <armadillo>
 #include <complex>
+#include <vector>
 
-class Matrix {
-public:
-    // Constructor with simulation parameters
-    Matrix(int M, double h, double dt, const arma::cx_mat& V);
-    
-    // Build A and B matrices for Crank-Nicolson method
-    void build(arma::sp_cx_mat& A, arma::sp_cx_mat& B);
-    
-    // Utility to print matrix structure
-    static void print_structure(const arma::sp_cx_mat& matrix);
-
+class Matrix
+{
 private:
-    // Convert 2D indices to 1D index
-    int idx(int i, int j) const;
-    
-    int M_;                    // Number of points in each dimension
-    double dt_;               // Time step
-    arma::cx_mat V_;          // Potential matrix
-    std::complex<double> r_;  // Crank-Nicolson parameter i*dt/(2h^2)
+    // Helper functions for creating matrix structure
+    arma::sp_cx_mat create_tridiagonal(arma::cx_vec &diagonal_values,
+                                       std::complex<double> r,
+                                       int size,
+                                       int block_idx);
+
+    arma::sp_cx_mat create_diagonal(std::complex<double> r, int size);
+
+public:
+    // Default constructor
+    Matrix() = default;
+
+    // Main function to create A and B matrices
+    std::vector<arma::sp_cx_mat> create_AB_matrices(arma::mat &V,
+                                                    double h,
+                                                    double dt,
+                                                    int M);
+
+    // Index conversion utilities
+    static int to_single_index(int i, int j, int size);
+    static std::pair<int, int> to_pair_index(int k, int size);
+
+    // Create full matrix with given block structure
+    arma::sp_cx_mat build_matrix(arma::cx_vec &diagonal_values,
+                                 std::complex<double> r,
+                                 int size);
 };
 
 #endif
