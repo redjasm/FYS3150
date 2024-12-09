@@ -159,3 +159,63 @@ arma::cx_vec Matrix::solve_gauss_seidel(const arma::sp_cx_mat &A,
               << max_iterations << " iterations" << std::endl;
     return x_new;
 }
+
+arma::cx_mat Matrix::create_initial_state(int M, double h,
+                                        double x_c, double y_c,
+                                        double sigma_x, double sigma_y,
+                                        double p_x, double p_y) {
+    // Initialize matrix for the entire grid, including boundaries
+    arma::cx_mat U(M, M, arma::fill::zeros);
+    
+    // Complex unit i
+    std::complex<double> i(0.0, 1.0);
+    
+    // Fill the grid with initial state values
+    for (int idx = 0; idx < M; idx++) {
+        for (int jdx = 0; jdx < M; jdx++) {
+            // Calculate x and y coordinates
+            double x = idx * h;
+            double y = jdx * h;
+            
+            // Calculate exponential terms
+            double gaussian_x = -pow(x - x_c, 2) / (2 * pow(sigma_x, 2));
+            double gaussian_y = -pow(y - y_c, 2) / (2 * pow(sigma_y, 2));
+            std::complex<double> momentum = i * (p_x * x + p_y * y);
+            
+            // Set value (ensuring boundary conditions)
+            if (idx == 0 || idx == M-1 || jdx == 0 || jdx == M-1) {
+                U(idx, jdx) = 0.0;  // Enforce boundary conditions
+            } else {
+                U(idx, jdx) = exp(gaussian_x + gaussian_y + momentum);
+            }
+        }
+    }
+    
+    // Normalize the state
+    normalize_state(U);
+    
+    return U;
+}
+
+double Matrix::calculate_probability_sum(const arma::cx_mat& U) {
+    double sum = 0.0;
+    
+    // Sum up |u_ij|² for all points
+    for (size_t i = 0; i < U.n_rows; ++i) {
+        for (size_t j = 0; j < U.n_cols; ++j) {
+            sum += std::norm(U(i,j));  // std::norm gives |z|² for complex z
+        }
+    }
+    
+    return sum;
+}
+
+void Matrix::normalize_state(arma::cx_mat& U) {
+    // Calculate current sum of probabilities
+    double prob_sum = calculate_probability_sum(U);
+    
+    // Normalize by dividing each element by sqrt(sum)
+    if (prob_sum > 0) {
+        U = U / std::sqrt(prob_sum);
+    }
+}

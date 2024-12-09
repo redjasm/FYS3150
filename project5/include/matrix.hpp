@@ -14,8 +14,11 @@ private:
                                        int block_idx);
     arma::sp_cx_mat create_diagonal(std::complex<double> r, int size);
 
-    // New helper function for Gauss-Seidel solver
+    // Helper function for Gauss-Seidel solver
     arma::cx_vec extract_diagonal_elements(const arma::sp_cx_mat &A);
+
+    // Helper function for normalization
+    // double calculate_probability_sum(const arma::cx_mat& U);
 
 public:
     // Default constructor
@@ -36,10 +39,23 @@ public:
                                  std::complex<double> r,
                                  int size);
 
-    // New Gauss-Seidel solver
+    // Gauss-Seidel solver
     arma::cx_vec solve_gauss_seidel(const arma::sp_cx_mat &A, 
                                    const arma::cx_vec &b,
                                    double tolerance = 1e-10,
                                    int max_iterations = 1000);
+
+    // Set up initial state
+    arma::cx_mat create_initial_state(int M, double h, 
+                                    double x_c, double y_c,
+                                    double sigma_x, double sigma_y,
+                                    double p_x, double p_y);
+
+    // Normalize state
+    void normalize_state(arma::cx_mat& U);
+
+    // Helper function for normalization
+    // Public to be used in main.cpp
+    double calculate_probability_sum(const arma::cx_mat& U);
 };
 #endif

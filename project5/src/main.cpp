@@ -116,6 +116,32 @@ int main() {
     for (int i = 0; i < n; ++i) {
         std::cout << "x[" << i << "] = " << x(i) << std::endl;
     }
+
+    // Test case 4: Testing initial state creation
+    std::cout << "\nTesting initial state creation:" << std::endl;
+    
+    // Parameters from project description
+    int M = 201;  // 200 steps -> 201 points
+    double h = 1.0/200.0;
+    double x_c = 0.25;
+    double y_c = 0.5;
+    double sigma_x = 0.05;
+    double sigma_y = 0.05;
+    double p_x = 200;
+    double p_y = 0;
+    
+    arma::cx_mat U = matrix.create_initial_state(M, h, x_c, y_c, 
+                                               sigma_x, sigma_y, p_x, p_y);
+    
+    // Verify normalization
+    double total_prob = matrix.calculate_probability_sum(U);
+    std::cout << "Total probability after normalization: " << total_prob << std::endl;
+    
+    // Print a few values
+    std::cout << "\nSome values from the initial state:" << std::endl;
+    std::cout << "U(100,100) = " << U(100,100) << std::endl;
+    std::cout << "U(50,100) = " << U(50,100) << std::endl;
+    std::cout << "U(0,0) = " << U(0,0) << std::endl;  // Should be 0 (boundary)
     
     return 0;
 }
