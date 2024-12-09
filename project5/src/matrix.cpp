@@ -102,3 +102,60 @@ std::vector<arma::sp_cx_mat> Matrix::create_AB_matrices(arma::mat &V,
 
     return {A, B};
 }
+
+// Helper function to extract diagonal elements from sparse matrix
+arma::cx_vec Matrix::extract_diagonal_elements(const arma::sp_cx_mat &A) {
+    arma::cx_vec diagonal(A.n_rows);
+    for (size_t i = 0; i < A.n_rows; ++i) {
+        diagonal(i) = A(i,i);
+    }
+    return diagonal;
+}
+
+// Gauss-Seidel solver implementation
+arma::cx_vec Matrix::solve_gauss_seidel(const arma::sp_cx_mat &A, 
+                                       const arma::cx_vec &b,
+                                       double tolerance,
+                                       int max_iterations) {
+    int n = A.n_rows;
+    arma::cx_vec x(n, arma::fill::zeros);  // Initial guess x = 0
+    arma::cx_vec x_new(n);
+    arma::cx_vec diagonal = extract_diagonal_elements(A);
+
+    // Iterate until convergence or max iterations reached
+    for (int iter = 0; iter < max_iterations; ++iter) {
+        x_new = x;  // Store previous iteration
+
+        // Perform Gauss-Seidel iteration
+        for (int i = 0; i < n; ++i) {
+            std::complex<double> sum(0.0, 0.0);
+            
+            // Use iterator to efficiently access non-zero elements
+            for (arma::sp_cx_mat::const_row_iterator it = A.begin_row(i); 
+                 it != A.end_row(i); ++it) {
+                int j = it.col();
+                if (j != i) {  // Skip diagonal element
+                    if (j < i) {
+                        sum += (*it) * x_new(j);  // Use updated values
+                    } else {
+                        sum += (*it) * x(j);      // Use previous values
+                    }
+                }
+            }
+            
+            x_new(i) = (b(i) - sum) / diagonal(i);
+        }
+
+        // Check convergence
+        double relative_error = arma::norm(x_new - x) / arma::norm(x_new);
+        if (relative_error < tolerance) {
+            return x_new;
+        }
+
+        x = x_new;  // Update solution for next iteration
+    }
+
+    std::cout << "Warning: Gauss-Seidel method did not converge within " 
+              << max_iterations << " iterations" << std::endl;
+    return x_new;
+}

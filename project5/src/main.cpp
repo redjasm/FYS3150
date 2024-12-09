@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <iomanip>
 
 // A function that prints the structure of a sparse matrix to screen.
 void print_sp_matrix_structure(const arma::sp_cx_mat& A)
@@ -86,6 +87,35 @@ int main() {
     
     std::cout << "\nMatrix B structure:" << std::endl;
     print_sp_matrix_structure(matrices2[1]);
+
+
+    // Test case 3: Testing Gauss-Seidel solver
+    std::cout << "\nTesting Gauss-Seidel solver with M=5 (3x3 internal grid):" << std::endl;
+    
+    // Use matrices1[0] (A) and matrices1[1] (B) from the first test case
+    arma::sp_cx_mat A = matrices1[0];
+    arma::sp_cx_mat B = matrices1[1];
+
+    // Create a test vector b with ones
+    int n = (5-2) * (5-2);  // Size is (M-2)^2
+    arma::cx_vec b(n, arma::fill::ones);
+
+    // Solve using Gauss-Seidel
+    std::cout << "Solving A * x = b..." << std::endl;
+    arma::cx_vec x = matrix.solve_gauss_seidel(A, b);
+
+    // Verify solution
+    arma::cx_vec residual = b - A * x;
+    double relative_residual = arma::norm(residual) / arma::norm(b);
+    
+    std::cout << std::scientific << std::setprecision(3);
+    std::cout << "Relative residual: " << relative_residual << std::endl;
+    
+    // Print solution vector
+    std::cout << "\nSolution vector x:" << std::endl;
+    for (int i = 0; i < n; ++i) {
+        std::cout << "x[" << i << "] = " << x(i) << std::endl;
+    }
     
     return 0;
 }
