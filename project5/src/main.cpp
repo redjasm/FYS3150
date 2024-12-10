@@ -1,62 +1,83 @@
-#include "matrix.hpp"
+// main.cpp
+#include "simulation.hpp"
 #include <iostream>
 #include <iomanip>
 
-// Function to print the potential values around the slits
-void print_potential_slice(const arma::mat& V, int wall_center, int y_center, int width = 20) {
-    std::cout << "\nPotential values around slits (• indicates wall):" << std::endl;
-    for (int j = y_center - width; j <= y_center + width; j++) {
-        std::cout << (V(wall_center, j) > 0 ? "•" : " ");
-        if (j == y_center) std::cout << "|"; // Mark center
+void run_problem7() {
+    // Case 1: No barrier
+    Simulation sim1(0.005, 2.5e-5, 0.008,  // h, dt, T
+                   0.25, 0.5,              // x_c, y_c
+                   0.05, 0.05,             // sigma_x, sigma_y
+                   200, 0,                 // p_x, p_y
+                   0);                     // v0 (no barrier)
+    
+    sim1.run();
+    arma::vec prob_history1 = sim1.get_probability_history();
+    
+    // Case 2: With barrier
+    Simulation sim2(0.005, 2.5e-5, 0.008,  // h, dt, T
+                   0.25, 0.5,              // x_c, y_c
+                   0.05, 0.10,             // sigma_x, sigma_y
+                   200, 0,                 // p_x, p_y
+                   1e10);                  // v0 (with barrier)
+    
+    sim2.run();
+    arma::vec prob_history2 = sim2.get_probability_history();
+    
+    // Save results for plotting
+    prob_history1.save("prob_history_no_barrier.bin");
+    prob_history2.save("prob_history_with_barrier.bin");
+}
+
+void run_problem8() {
+    Simulation sim(0.005, 2.5e-5, 0.002,  // h, dt, T
+                  0.25, 0.5,              // x_c, y_c
+                  0.05, 0.20,             // sigma_x, sigma_y
+                  200, 0,                 // p_x, p_y
+                  1e10);                  // v0
+    
+    // Save initial state
+    sim.save_state("initial", 0);
+    
+    // Run simulation and save intermediate states
+    sim.run();
+    sim.save_state("middle", round(0.001/2.5e-5));  // t = 0.001
+    sim.save_state("final", round(0.002/2.5e-5));   // t = 0.002
+}
+
+void run_problem9() {
+    // Parameters
+    double h = 0.005;
+    double dt = 2.5e-5;
+    double T = 0.002;
+    double detector_x = 0.8;
+    
+    // Run simulations for different slit configurations
+    for (int n_slits : {1, 2, 3}) {
+        Simulation sim(h, dt, T,
+                      0.25, 0.5,    // x_c, y_c
+                      0.05, 0.20,   // sigma_x, sigma_y
+                      200, 0,       // p_x, p_y
+                      1e10,         // v0
+                      n_slits);     // number of slits
+        
+        sim.run();
+        
+        // Get detector probabilities
+        arma::vec detector_prob = sim.get_detector_probabilities(detector_x);
+        detector_prob.save("detector_prob_" + std::to_string(n_slits) + "slits.bin");
     }
-    std::cout << std::endl;
 }
 
 int main() {
-    std::cout << std::scientific << std::setprecision(3);
+    std::cout << "Running Problem 7 (Probability Conservation)...\n";
+    run_problem7();
     
-    // Test potential creation with problem 5 parameters
-    int M = 201;          // 200 steps -> 201 points
-    double h = 1.0/200.0;
-    double v0 = 1e10;
+    std::cout << "Running Problem 8 (Time Evolution)...\n";
+    run_problem8();
     
-    Matrix matrix;
-    arma::mat V = matrix.create_potential(M, h, v0);
-    
-    // Print dimensions and key parameters
-    std::cout << "Potential matrix dimensions: " << V.n_rows << "x" << V.n_cols << std::endl;
-    
-    // Calculate and print important positions
-    int wall_center = round(0.5/h) - 1;  // Wall at x = 0.5
-    int y_center = (M-2)/2;              // Center in y-direction
-    
-    std::cout << "\nGrid measurements:" << std::endl;
-    std::cout << "Wall center index: " << wall_center << std::endl;
-    std::cout << "Y center index: " << y_center << std::endl;
-    std::cout << "Wall thickness: " << round(0.02/h) << " points" << std::endl;
-    std::cout << "Slit aperture: " << round(0.05/h) << " points" << std::endl;
-    std::cout << "Slit separation: " << round(0.05/h) << " points" << std::endl;
-    
-    // Check key potential values
-    std::cout << "\nPotential values at key points:" << std::endl;
-    std::cout << "Wall center value: " << V(wall_center, y_center) << std::endl;
-    
-    // Calculate slit positions
-    int slit_sep = round(0.05/h);
-    int y_slit1 = y_center - slit_sep/2;
-    int y_slit2 = y_center + slit_sep/2;
-    
-    std::cout << "Slit 1 value: " << V(wall_center, y_slit1) << std::endl;
-    std::cout << "Slit 2 value: " << V(wall_center, y_slit2) << std::endl;
-    
-    // Print a slice of potential values
-    std::cout << "\nPotential values along y-axis at wall center (x=0.5):" << std::endl;
-    for (int j = y_center-10; j <= y_center+10; j++) {
-        std::cout << "V(" << wall_center << "," << j << ") = " << V(wall_center, j) << std::endl;
-    }
-    
-    // Print visual representation of the slits
-    print_potential_slice(V, wall_center, y_center);
+    std::cout << "Running Problem 9 (Detector Analysis)...\n";
+    run_problem9();
     
     return 0;
 }

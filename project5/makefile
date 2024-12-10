@@ -5,10 +5,9 @@ LDFLAGS = -L/opt/homebrew/lib -larmadillo
 SRC_DIR = src
 BUILD_DIR = build
 INCLUDE_DIR = include
-
 TARGET = main
 
-SOURCES = $(SRC_DIR)/main.cpp $(SRC_DIR)/matrix.cpp
+SOURCES = $(SRC_DIR)/main.cpp $(SRC_DIR)/matrix.cpp $(SRC_DIR)/simulation.cpp
 OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 
 $(TARGET): $(OBJECTS)

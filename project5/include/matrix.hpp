@@ -55,6 +55,6 @@ public:
     void normalize_state(arma::cx_mat& U);
 
     // Create potential for double-slit setup
-    arma::mat create_potential(int M, double h, double v0);
+    arma::mat create_potential(int M, double h, double v0, int n_slits);
 };
 #endif

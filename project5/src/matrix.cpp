@@ -219,8 +219,7 @@ void Matrix::normalize_state(arma::cx_mat& U) {
         U = U / std::sqrt(prob_sum);
     }
 }
-
-arma::mat Matrix::create_potential(int M, double h, double v0) {
+arma::mat Matrix::create_potential(int M, double h, double v0, int n_slits = 2) {
     // Create potential matrix for internal points (M-2 x M-2)
     arma::mat V(M-2, M-2, arma::fill::zeros);
     
@@ -235,25 +234,44 @@ arma::mat Matrix::create_potential(int M, double h, double v0) {
     int x_start = wall_center - wall_thickness/2;
     int x_end = wall_center + wall_thickness/2;
     
-    // Calculate slit positions (symmetric around y_center)
-    int slit1_center = y_center - slit_separation/2 - slit_aperture/2;
-    int slit2_center = y_center + slit_separation/2 + slit_aperture/2;
-    
-    // Fill in the wall potential
+    // Fill the entire wall first
     for (int i = x_start; i <= x_end; i++) {
         for (int j = 0; j < M-2; j++) {
-            // Default: add wall
             V(i,j) = v0;
-            
-            // Check if we're in a slit region
-            bool in_slit1 = (j >= slit1_center - slit_aperture/2) && 
-                           (j <= slit1_center + slit_aperture/2);
-            bool in_slit2 = (j >= slit2_center - slit_aperture/2) && 
-                           (j <= slit2_center + slit_aperture/2);
-            
-            // If in slit, set potential to 0
-            if (in_slit1 || in_slit2) {
-                V(i,j) = 0.0;
+        }
+    }
+    
+    // Handle different slit configurations
+    if (n_slits == 0) {
+        return V;  // Solid wall, no slits
+    }
+    
+    // Calculate slit positions based on number of slits
+    std::vector<int> slit_centers;
+    if (n_slits == 1) {
+        // Single slit centered
+        slit_centers.push_back(y_center);
+    }
+    else if (n_slits == 2) {
+        // Double slit symmetric around center
+        slit_centers.push_back(y_center - slit_separation/2 - slit_aperture/2);
+        slit_centers.push_back(y_center + slit_separation/2 + slit_aperture/2);
+    }
+    else if (n_slits == 3) {
+        // Triple slit with one in center
+        slit_centers.push_back(y_center - slit_separation - slit_aperture);
+        slit_centers.push_back(y_center);
+        slit_centers.push_back(y_center + slit_separation + slit_aperture);
+    }
+    
+    // Create the slits by setting potential to 0 in slit regions
+    for (int slit_center : slit_centers) {
+        for (int i = x_start; i <= x_end; i++) {
+            for (int j = slit_center - slit_aperture/2; 
+                 j <= slit_center + slit_aperture/2; j++) {
+                if (j >= 0 && j < M-2) {  // Ensure we're within bounds
+                    V(i,j) = 0.0;
+                }
             }
         }
     }
