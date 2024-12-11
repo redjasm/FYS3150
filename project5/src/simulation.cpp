@@ -32,12 +32,16 @@ Simulation::Simulation(double h, double dt, double T,
     B = matrices[1];
 }
 
-void Simulation::run() {
+void Simulation::run(std::vector<int> save_timesteps) {
     int n_steps = round(T/dt);
     probability_history.reserve(n_steps + 1);
     
     // Store initial probability
     probability_history.push_back(arma::sum(arma::sum(get_probability_matrix())));
+    
+    // Sort save_timesteps to ensure we don't miss any
+    std::sort(save_timesteps.begin(), save_timesteps.end());
+    auto next_save = save_timesteps.begin();
     
     // Time evolution
     int progress_interval = std::max(1, n_steps / 10); 
@@ -62,13 +66,25 @@ void Simulation::run() {
             u = matrix_solver.solve_gauss_seidel(A, b);
         }
         
+        // Check if we need to save this timestep
+        if (next_save != save_timesteps.end() && n == *next_save) {
+            std::string prefix;
+            if (n == 0) prefix = "initial";
+            else if (n == n_steps-1) prefix = "final";
+            else prefix = "middle";
+            
+            save_state(prefix, n);
+            ++next_save;
+        }
+        
         // Store probability less frequently
-        if (n % 100 == 0) {  // Reduced from every 10th to every 100th step
+        if (n % 100 == 0) {
             probability_history.push_back(arma::sum(arma::sum(get_probability_matrix())));
         }
     }
     std::cout << "Simulation complete (100%)" << std::endl;
 }
+
 
 arma::mat Simulation::get_probability_matrix() const {
     arma::mat prob(M-2, M-2);

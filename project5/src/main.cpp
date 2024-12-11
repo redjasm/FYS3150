@@ -36,13 +36,9 @@ void run_problem8() {
                   200, 0,                 // p_x, p_y
                   1e10);                  // v0
     
-    // Save initial state
-    sim.save_state("initial", 0);
-    
-    // Run simulation and save intermediate states
-    sim.run();
-    sim.save_state("middle", round(0.001/2.5e-5));  // t = 0.001
-    sim.save_state("final", round(0.002/2.5e-5));   // t = 0.002
+    // Run simulation and save at specified timesteps
+    std::vector<int> save_steps = {0, 40, 80};  // initial, middle, final
+    sim.run(save_steps);
 }
 
 void run_problem9() {
