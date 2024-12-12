@@ -3,6 +3,7 @@
 
 #include <armadillo>
 #include "matrix.hpp"
+#include <fstream>
 
 class Simulation
 {
@@ -30,7 +31,7 @@ public:
                double v0, int n_slits = 2);
 
     // Core simulation methods
-    void run();
+    void run(std::vector<int> save_timesteps = std::vector<int>());
     void save_state(const std::string &filename, int timestep);
 
     // Analysis methods

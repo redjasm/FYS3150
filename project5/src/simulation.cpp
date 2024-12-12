@@ -126,9 +126,40 @@ void Simulation::save_state(const std::string& filename, int timestep) {
     
     // Save each component with timestep in filename
     std::string time_str = std::to_string(timestep);
-    prob.save(filename + "_prob_" + time_str + ".bin");
-    real_part.save(filename + "_real_" + time_str + ".bin");
-    imag_part.save(filename + "_imag_" + time_str + ".bin");
+    
+    std::string prob_filename = filename + "_prob_" + time_str + ".bin";
+    std::string real_filename = filename + "_real_" + time_str + ".bin";
+    std::string imag_filename = filename + "_imag_" + time_str + ".bin";
+    
+    std::cout << "Attempting to save files:" << std::endl;
+    std::cout << " - " << prob_filename << std::endl;
+    std::cout << " - " << real_filename << std::endl;
+    std::cout << " - " << imag_filename << std::endl;
+    
+    bool prob_saved = prob.save(prob_filename);
+    bool real_saved = real_part.save(real_filename);
+    bool imag_saved = imag_part.save(imag_filename);
+    
+    if (!prob_saved || !real_saved || !imag_saved) {
+        std::cerr << "Error saving files!" << std::endl;
+        std::cerr << "Probability saved: " << prob_saved << std::endl;
+        std::cerr << "Real part saved: " << real_saved << std::endl;
+        std::cerr << "Imaginary part saved: " << imag_saved << std::endl;
+        
+        // Check if matrices are empty or have NaN values
+        std::cout << "Matrix sizes:" << std::endl;
+        std::cout << "Probability: " << prob.n_rows << "x" << prob.n_cols << std::endl;
+        std::cout << "Real part: " << real_part.n_rows << "x" << real_part.n_cols << std::endl;
+        std::cout << "Imag part: " << imag_part.n_rows << "x" << imag_part.n_cols << std::endl;
+        
+        if (prob.has_nan() || real_part.has_nan() || imag_part.has_nan()) {
+            std::cerr << "Warning: NaN values detected in matrices!" << std::endl;
+        }
+        
+        throw std::runtime_error("Failed to save state files");
+    }
+    
+    std::cout << "Successfully saved state files" << std::endl;
 }
 
 arma::mat Simulation::get_real_part() const {
